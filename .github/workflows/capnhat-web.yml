@@ -1,0 +1,63 @@
+# Máy chủ GitHub tự dựng + đăng lại website mỗi sáng 7h15 (giờ VN) — máy Mac tắt vẫn chạy.
+# Nhà chính: GitHub Pages (tuansaigon.com) · surge.sh giữ làm bản phụ (canonical trỏ về tên miền chính).
+# Chạy tay: tab Actions -> "Cập nhật web hằng ngày" -> Run workflow.
+#
+# ⚠️ DATA KHÔNG CÒN NẰM TRONG REPO (16/07): repo này PUBLIC (GitHub bắt public mới cho Pages free)
+# nên archive.json / listings.json / anh-map.json đã dời sang bucket R2 RIÊNG `tuansaigon-data`
+# (bucket KÍN — KHÔNG gắn custom domain nên không có URL công khai, phải có khoá mới đọc;
+#  bucket ẢNH `tuansaigon-anh` thì CÓ domain -> tuyệt đối đừng để data chung vào đó).
+# Trước đây ai cũng `git clone` là có trọn kho hàng dạng JSON sạch trong 30 giây.
+# -> Build giờ: TẢI data từ R2 -> dựng web -> ĐẨY data mới lên R2 (KHÔNG commit ngược vào repo nữa).
+name: Cập nhật web hằng ngày
+on:
+  schedule:
+    - cron: '15 0 * * *'   # 00:15 UTC = 07:15 sáng Việt Nam
+    - cron: '0 12 * * *'   # 12:00 UTC = 19:00 tối Việt Nam (Tuấn thêm 11/07)
+  workflow_dispatch:
+permissions:
+  contents: read     # không còn commit ngược -> khỏi cần quyền ghi
+  pages: write
+  id-token: write
+concurrency: capnhat-web
+jobs:
+  dung-va-dang:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Tải kho dữ liệu từ R2
+        run: node tools/data-r2.mjs pull
+      - name: Dựng web từ kho tin
+        env:
+          WEB_KEY: ${{ secrets.WEB_KEY }}
+          SITE_URL: https://tuansaigon.com
+        run: |
+          node build.mjs
+          echo "tuansaigon.com" > dist/CNAME
+      - name: Đăng lên GitHub Pages (tuansaigon.com)
+        uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Đăng bản phụ lên tuansaigon.surge.sh
+        continue-on-error: true   # web ~124MB vượt gói free surge — bản phụ fail không sao (12/07)
+        env:
+          SURGE_LOGIN: tdteam2020@gmail.com
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+        run: npx --yes surge ./dist tuansaigon.surge.sh --token "$SURGE_TOKEN"
+      - name: Lưu kho dữ liệu mới lên R2
+        if: always()   # web deploy rồi thì data mới (slug/Đôi nét) PHẢI được lưu, kẻo lượt sau dựng lại từ bản cũ
+        run: node tools/data-r2.mjs push

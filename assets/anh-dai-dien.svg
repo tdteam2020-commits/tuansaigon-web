@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
+  <defs>
+    <linearGradient id="nen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f5c44"/>
+      <stop offset="1" stop-color="#0b3d2e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="750" fill="url(#nen)"/>
+  <!-- dãy nhà phố line-art -->
+  <g stroke="#c9a35c" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round" opacity="0.9">
+    <!-- nhà 1 -->
+    <path d="M330 470 V300 h120 v170"/>
+    <path d="M345 322 h90 M345 352 h90"/>
+    <rect x="358" y="385" width="28" height="40"/>
+    <rect x="398" y="385" width="28" height="40"/>
+    <path d="M366 440 h50 v30"/>
+    <!-- nhà 2 (cao, chính giữa) -->
+    <path d="M480 470 V240 h140 v230"/>
+    <path d="M480 240 l70 -45 70 45"/>
+    <rect x="505" y="275" width="30" height="35"/>
+    <rect x="565" y="275" width="30" height="35"/>
+    <rect x="505" y="335" width="30" height="35"/>
+    <rect x="565" y="335" width="30" height="35"/>
+    <path d="M525 470 v-60 h50 v60"/>
+    <!-- nhà 3 -->
+    <path d="M650 470 V320 h130 v150"/>
+    <path d="M650 320 h130 M665 345 h100"/>
+    <rect x="672" y="370" width="30" height="38"/>
+    <rect x="728" y="370" width="30" height="38"/>
+    <path d="M685 470 v-42 h58 v42"/>
+    <!-- ban công + cây -->
+    <path d="M810 470 v-95 h60 v95 M818 400 h44"/>
+    <circle cx="885" cy="430" r="22"/>
+    <path d="M885 452 v18"/>
+    <!-- nền đường -->
+    <path d="M290 470 H910"/>
+  </g>
+  <text x="600" y="555" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="bold" fill="#f7f6f2">Ảnh đang được cập nhật</text>
+  <text x="600" y="612" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" fill="#e3c98f">Thông số căn nhà đầy đủ bên dưới — gọi Tuấn để nhận ảnh &amp; xem nhà</text>
+  <text x="600" y="672" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="bold" fill="#c9a35c">📞 0777 088 622 · Tuấn Sài Gòn</text>
+</svg>

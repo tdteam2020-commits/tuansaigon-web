@@ -1,0 +1,17 @@
+dist/
+logs/
+logs-sweep.txt
+nohup.out
+data/sweep-done.json
+.DS_Store
+logs-sweep2.txt
+
+# DATA WEB KHÔNG ĐƯỢC VÀO REPO (16/07) — repo này PUBLIC, ai cũng clone được.
+# Kho hàng (listings/archive/anh-map) nằm ở bucket R2 KÍN `tuansaigon-data`.
+# Lấy về: source ~/.config/claude-bds/r2.env && node tools/data-r2.mjs pull
+data/archive.json
+data/listings.json
+data/anh-map.json
+data/doinet-done.json
+data/sweep-done.json
+.anh-tmp/
