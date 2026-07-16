@@ -209,15 +209,20 @@ function fbarBlock(areas, preQ = '') {
 </div>
 <div class="grid" id="fgrid" hidden></div>
 <p class="xemtat" id="fmore" hidden><a href="#" id="fmorea">Xem thêm →</a></p>
-<script>
-(function(){
+<script>${jsLoc(preQ)}</script>`;
+}
+// Script bộ lọc tách riêng để KIỂM CÚ PHÁP lúc dựng (xem chú thích ở fbarBlock).
+function jsLoc(preQ) {
+  const js = `(function(){
 var fq=document.getElementById('fq'),fv=document.getElementById('fv'),g1=document.getElementById('fg1'),g2=document.getElementById('fg2'),d1=document.getElementById('fd1'),
 kq=document.getElementById('fkq'),gr=document.getElementById('fgrid'),mo=document.getElementById('fmore'),moa=document.getElementById('fmorea');
 var IX=null,dangTai=false,hit=[],hienN=0,LO=36,daDung=false,PRE='${R2_URL}';
 function khoiTinh(){return document.getElementById('fstatic')}
 /* Chỉ mục cắt tiền tố kho R2 cho nhẹ -> ở đây ghép lại. Ảnh CHƯA mirror thì lưu nguyên URL gốc
-   (cloudinary/daitheky) nên để nguyên; '/anh/...' là ảnh đại diện, cũng để nguyên. */
-function anh(s){return !s?'/anh/anh-dai-dien.svg':(/^https?:\/\//.test(s)||s.charAt(0)==='/'?s:PRE+s)}
+   (cloudinary/daitheky) nên để nguyên; '/anh/...' là ảnh đại diện, cũng để nguyên.
+   ⚠️ ĐỪNG dùng regex ở đây: script này nằm trong template literal của build.mjs, dấu \\ bị NUỐT
+   -> /^https?:\\/\\// in ra thành /^https?:/// -> JS đọc // là COMMENT -> CHẾT CẢ BỘ LỌC (dính 16/07). */
+function anh(s){return !s?'/anh/anh-dai-dien.svg':(s.slice(0,4)==='http'||s.charAt(0)==='/'?s:PRE+s)}
 function the(r){var vt=IX.v[r[6]];
 return '<a class="card" href="/nha-dat/'+r[0]+'.html"><div class="thumb"><img src="'+anh(r[2])+'" alt="'+r[1]+'" loading="lazy" onerror="this.parentNode.style.display=\\'none\\'">'+
 '<span class="badge"><b>'+r[4]+'</b></span>'+(vt?'<span class="vt">'+vt+'</span>':'')+'</div>'+
@@ -246,8 +251,12 @@ veThem()}
 function dung(){daDung=true;loc()}
 moa.addEventListener('click',function(e){e.preventDefault();veThem()});
 [fq,fv].forEach(function(x){x.addEventListener('change',dung)});
-[g1,g2,d1].forEach(function(x){x.addEventListener('input',dung)});})();
-</script>`;
+[g1,g2,d1].forEach(function(x){x.addEventListener('input',dung)});})();`;
+  // 🛡 LƯỚI (16/07, dính 2 lần): script này nằm TRONG template literal của build.mjs -> dấu \\ bị NUỐT.
+  // Lần 1: regex /^https?:\\/\\// in ra thành /^https?:/// -> JS đọc // là COMMENT -> CHẾT CẢ BỘ LỌC,
+  // mà build vẫn báo 'Dựng xong' nên deploy web hỏng lúc nào không hay. Giờ kiểm cú pháp NGAY LÚC DỰNG.
+  try { new Function(js); } catch (e) { throw new Error('❌ SCRIPT BỘ LỌC HỎNG CÚ PHÁP -> DỪNG BUILD: ' + e.message); }
+  return js;
 }
 const faqLd = qa => ({ '@type': 'FAQPage', mainEntity: qa.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) });
 const faqHtml = qa => qa.map(f => `<details class="qa"><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n');
