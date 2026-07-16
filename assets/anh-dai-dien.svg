@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750" viewBox="0 0 1200 750">
   <defs>
     <linearGradient id="nen" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#0f5c44"/>
-      <stop offset="1" stop-color="#0b3d2e"/>
+      <stop offset="0" stop-color="#8a2a3c"/>
+      <stop offset="1" stop-color="#5c1a2b"/>
     </linearGradient>
   </defs>
   <rect width="1200" height="750" fill="url(#nen)"/>
@@ -35,7 +35,7 @@
     <!-- nền đường -->
     <path d="M290 470 H910"/>
   </g>
-  <text x="600" y="555" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="bold" fill="#f7f6f2">Ảnh đang được cập nhật</text>
+  <text x="600" y="555" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="52" font-weight="bold" fill="#faf7f5">Ảnh đang được cập nhật</text>
   <text x="600" y="612" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="30" fill="#e3c98f">Thông số căn nhà đầy đủ bên dưới — gọi Tuấn để nhận ảnh &amp; xem nhà</text>
   <text x="600" y="672" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="bold" fill="#c9a35c">📞 0777 088 622 · Tuấn Sài Gòn</text>
 </svg>
