@@ -459,7 +459,7 @@ h2:before{content:'';position:absolute;left:0;top:.25em;bottom:.25em;width:4px;b
 .thumb{position:relative;overflow:hidden;aspect-ratio:16/10;background:#ece3df}
 .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
 .card:hover .thumb img{transform:scale(1.05)}
-.badge{position:absolute;left:10px;bottom:10px;background:#5c1a2b;color:#fff;font-weight:800;padding:5px 13px;border-radius:999px;font-size:.98rem;box-shadow:0 3px 10px rgba(60,15,25,.4)}
+.badge{position:absolute;left:10px;bottom:10px;background:#5c1a2b;color:#fff;font-weight:800;padding:5px 14px;border-radius:999px;font-size:.98rem;border:1.5px solid rgba(201,163,92,.9);box-shadow:0 2px 6px rgba(0,0,0,.45),0 4px 14px rgba(60,15,25,.5)}
 .badge b{color:var(--vang2)}
 .vt{position:absolute;right:10px;top:10px;background:rgba(92,26,43,.94);color:#fff;font-size:.78rem;font-weight:700;padding:3px 11px;border-radius:999px;box-shadow:0 2px 8px rgba(60,15,25,.3);backdrop-filter:blur(3px)}
 .ci{padding:14px 16px 15px}.ci h3{font-size:1.02rem;line-height:1.4;font-family:'Be Vietnam Pro',sans-serif;font-weight:600}
