@@ -213,9 +213,11 @@ function fbarBlock(areas, preQ = '') {
 (function(){
 var fq=document.getElementById('fq'),fv=document.getElementById('fv'),g1=document.getElementById('fg1'),g2=document.getElementById('fg2'),d1=document.getElementById('fd1'),
 kq=document.getElementById('fkq'),gr=document.getElementById('fgrid'),mo=document.getElementById('fmore'),moa=document.getElementById('fmorea');
-var IX=null,dangTai=false,hit=[],hienN=0,LO=36,daDung=false,PRE='https://tdteam2020-commits.github.io/tuansaigon-anh';
+var IX=null,dangTai=false,hit=[],hienN=0,LO=36,daDung=false,PRE='${R2_URL}';
 function khoiTinh(){return document.getElementById('fstatic')}
-function anh(s){return !s?'/anh/anh-dai-dien.svg':(s.charAt(0)==='/'?s:PRE+s)}
+/* Chỉ mục cắt tiền tố kho R2 cho nhẹ -> ở đây ghép lại. Ảnh CHƯA mirror thì lưu nguyên URL gốc
+   (cloudinary/daitheky) nên để nguyên; '/anh/...' là ảnh đại diện, cũng để nguyên. */
+function anh(s){return !s?'/anh/anh-dai-dien.svg':(/^https?:\/\//.test(s)||s.charAt(0)==='/'?s:PRE+s)}
 function the(r){var vt=IX.v[r[6]];
 return '<a class="card" href="/nha-dat/'+r[0]+'.html"><div class="thumb"><img src="'+anh(r[2])+'" alt="'+r[1]+'" loading="lazy" onerror="this.parentNode.style.display=\\'none\\'">'+
 '<span class="badge"><b>'+r[4]+'</b></span>'+(vt?'<span class="vt">'+vt+'</span>':'')+'</div>'+
@@ -232,7 +234,11 @@ fetch('/tim-kiem.json').then(function(r){return r.json()}).then(function(j){IX=j
 var q=fq.value,v=fv.value,lo=parseFloat(g1.value),hi=parseFloat(g2.value),dt=parseFloat(d1.value);
 if(isNaN(lo))lo=0;if(isNaN(hi))hi=1e9;if(isNaN(dt))dt=0;
 var qi=q?IX.q.indexOf(q):-1,vi=v?IX.v.indexOf(v):-1;
-hit=IX.r.filter(function(r){return (qi<0||r[5]===qi)&&(vi<0||r[6]===vi)&&r[3]>=lo&&r[3]<=hi&&(!dt||r[7]>=dt)});
+/* CHỌN rồi mà KHÔNG có trong chỉ mục -> 0 CĂN. TUYỆT ĐỐI không rơi về "không lọc":
+   16/07 ô chọn dùng slug 'quan-7-phu-my-hung' còn chỉ mục dùng 'quan-7' -> indexOf=-1 -> qi<0
+   -> lọc Quận 7 mà XỔ RA TOÀN BỘ 12.684 căn (Tuấn bắt). Lệch slug đã sửa, đây là lưới chặn dưới. */
+if((q&&qi<0)||(v&&vi<0))hit=[];
+else hit=IX.r.filter(function(r){return (qi<0||r[5]===qi)&&(vi<0||r[6]===vi)&&r[3]>=lo&&r[3]<=hi&&(!dt||r[7]>=dt)});
 if(st)st.hidden=true;gr.hidden=false;gr.innerHTML='';hienN=0;
 kq.textContent='→ '+hit.length+' căn khớp';
 if(!hit.length){gr.innerHTML='<p class="dim">Không có căn nào khớp. Anh chị nới tầm giá/diện tích, hoặc gọi ${PHONE_FMT} để Tuấn tìm giúp.</p>';mo.hidden=true;return}
@@ -625,14 +631,22 @@ ${COC.length ? `<h2 id="da-coc">Giao dịch gần đây — đã có khách cọ
   // -> "Phú Nhuận + Hẻm xe hơi" ra "0 căn khớp" dù kho có thật (Tuấn bắt lỗi 16/07). Giờ lọc chạy trên
   // chỉ mục ĐẦY ĐỦ này, khách bấm lọc mới tải (không làm chậm trang lúc mở).
   // Mảng thay vì object cho nhẹ; ảnh cắt tiền tố chung; chuỗi ĐÃ esc sẵn để client nhét thẳng innerHTML.
-  const IMG_PRE = 'https://tdteam2020-commits.github.io/tuansaigon-anh';
-  const qSlug = [...new Set(ACT.map(l => slug(l.quan)))];
-  const qTen = qSlug.map(sg => { const f = ACT.find(l => slug(l.quan) === sg); return esc(f.quan); });
+  // Cắt tiền tố kho ảnh R2 cho chỉ mục nhẹ (mirrored -> "abc.jpg"); ảnh CHƯA mirror giữ nguyên URL gốc.
+  // ⚠️ 16/07: kho ảnh đã chuyển GitHub Pages -> R2, nên tiền tố này PHẢI bám R2_URL. Ghim tay chuỗi cũ
+  // là client ghép sai -> ảnh trong kết quả lọc VỠ HẾT (suýt dính khi session kia dời nhà sang Cloudflare).
+  const IMG_PRE = R2_URL;
+  // ⚠️ 16/07 (Tuấn bắt lỗi Q7/Q2 lọc ra TOÀN BỘ 12.684 căn): slug quận trong chỉ mục PHẢI lấy từ CÙNG
+  // nguồn với ô chọn (areasLive[].slug), ĐỪNG tự tính slug(l.quan) — khu Thảo Điền/Phú Mỹ Hưng có slug
+  // 'quan-2-thao-dien'/'quan-7-phu-my-hung' còn slug(l.quan) ra 'quan-2'/'quan-7' -> lệch -> indexOf=-1.
+  const qSlugOf = {}; areasLive.forEach(a => { qSlugOf[a.quan] = a.slug; });
+  const sgCua = l => qSlugOf[l.quan] || slug(l.quan);
+  const qSlug = [...new Set(ACT.map(sgCua))];
+  const qTen = qSlug.map(sg => esc(ACT.find(l => sgCua(l) === sg).quan));
   const vList = [...new Set(ACT.map(l => l.vitri || ''))];
   W('tim-kiem.json', JSON.stringify({
     q: qSlug, qt: qTen, v: vList.map(esc),
     r: ACT.map(l => [l.url, esc(tieuDe(l)), String(l.anh[0] || '').replace(IMG_PRE, ''), l.gia_ty, esc(l.gia_text),
-      qSlug.indexOf(slug(l.quan)), vList.indexOf(l.vitri || ''), l.dt || 0, l.tang || 0, l.ngang || 0, esc(l.phuong || ''), dViet(l.up)]),
+      qSlug.indexOf(sgCua(l)), vList.indexOf(l.vitri || ''), l.dt || 0, l.tang || 0, l.ngang || 0, esc(l.phuong || ''), dViet(l.up)]),
   }));
   W('nha-dat/index.html', page({ path: '/nha-dat/', title: `${st.n} căn nhà đang bán khu trung tâm TP.HCM (${today}) | ${BRAND.name}`, desc: `Danh sách ${st.n} nhà phố, biệt thự đang bán tại Quận 1, Quận 3, Quận 5, Quận 10, Phú Nhuận, Bình Thạnh, Gò Vấp, Tân Bình. Giá ${num(st.min, 0)}–${num(st.max, 0)} tỷ, cập nhật ${today}.`, ld, body, upDate: today }));
 }
