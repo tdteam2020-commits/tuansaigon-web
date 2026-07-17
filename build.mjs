@@ -686,6 +686,25 @@ for (const l of L) {
 }
 if (doiUrl) console.log(`· ${doiUrl} căn ĐỔI URL do sửa vị trí mặt tiền/hẻm (URL cũ -> trang chuyển hướng)`);
 
+// (17/07 Tuấn chốt) CĂN TRÙNG bị gộp (T123 nhiều chuyên gia cùng quản 1 nhà) -> REDIRECT về căn GIỮ (tương đương),
+// KHÔNG để 404 và KHÔNG redirect về Home (Home = soft-404, hại SEO). Redirect cả URL mã (k4789.html) lẫn URL
+// tiêu-đề cũ (lấy từ archive) sang căn giữ. data.gop = {mã trùng: mã giữ}.
+if (data.gop && Object.keys(data.gop).length) {
+  const urlByMa = {}; for (const l of L) urlByMa[l.ma] = l.url;
+  let arcAll = {}; try { arcAll = JSON.parse(readFileSync(ARCHIVE, 'utf8')); } catch (e) {}
+  let nGop = 0;
+  for (const dupMa of Object.keys(data.gop)) {
+    const ku = urlByMa[data.gop[dupMa]];   // URL căn GIỮ
+    if (!ku) continue;                      // căn giữ không có trên web -> bỏ (khỏi redirect vào hư không)
+    const moi = `/nha-dat/${ku}.html`;
+    stub(`nha-dat/${slug(dupMa)}.html`, moi);                       // URL mã của căn trùng
+    const oldUrl = arcAll[dupMa] && arcAll[dupMa].url;             // URL tiêu-đề cũ (đã từng index)
+    if (oldUrl && oldUrl !== ku) stub(`nha-dat/${oldUrl}.html`, moi);
+    nGop++;
+  }
+  if (nGop) console.log(`· ${nGop} căn TRÙNG (nhiều chuyên gia) -> redirect 301 về căn giữ (không 404)`);
+}
+
 // TRANG ĐƯỜNG (13/07 — đón từ khoá "bán nhà + tên đường": bán nhà phan xích long, nhà nguyễn trọng tuyển...)
 const byDuongKhu = {};
 for (const l of ACT) { if (!l.duong || l.duong.length < 4) continue; const k = `${l.duong}|${l.quan}`; (byDuongKhu[k] = byDuongKhu[k] || []).push(l); }
