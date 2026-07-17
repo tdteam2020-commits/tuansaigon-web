@@ -203,6 +203,7 @@ function fbarBlock(areas, preQ = '') {
 <b>Lọc:</b>
 <select id="fq" aria-label="Khu vực"><option value="">Tất cả khu vực</option>${areas.filter(a => a.rows.length).map(a => `<option value="${a.slug}"${a.slug === preQ ? ' selected' : ''}>${esc(a.quan)}</option>`).join('')}</select>
 <select id="fv" aria-label="Vị trí"><option value="">Mọi vị trí</option><option value="Hẻm xe hơi">Hẻm xe hơi</option><option value="Nhà hẻm">Nhà hẻm</option><option value="Mặt tiền">Mặt tiền</option></select>
+<input type="search" id="ft" class="ftxt" placeholder="Tên đường (vd: Lê Văn Sỹ)" aria-label="Tìm theo tên đường">
 <span class="frange">Giá <input type="number" id="fg1" min="0" step="1" inputmode="numeric" placeholder="từ" aria-label="Giá từ (tỷ)"> – <input type="number" id="fg2" min="0" step="1" inputmode="numeric" placeholder="đến" aria-label="Giá đến (tỷ)"> tỷ</span>
 <span class="frange">Diện tích từ <input type="number" id="fd1" min="0" step="1" inputmode="numeric" placeholder="từ" aria-label="Diện tích tối thiểu (m2)"> m²</span>
 <span class="fkq" id="fkq"></span>
@@ -214,10 +215,12 @@ function fbarBlock(areas, preQ = '') {
 // Script bộ lọc tách riêng để KIỂM CÚ PHÁP lúc dựng (xem chú thích ở fbarBlock).
 function jsLoc(preQ) {
   const js = `(function(){
-var fq=document.getElementById('fq'),fv=document.getElementById('fv'),g1=document.getElementById('fg1'),g2=document.getElementById('fg2'),d1=document.getElementById('fd1'),
+var fq=document.getElementById('fq'),fv=document.getElementById('fv'),g1=document.getElementById('fg1'),g2=document.getElementById('fg2'),d1=document.getElementById('fd1'),ft=document.getElementById('ft'),
 kq=document.getElementById('fkq'),gr=document.getElementById('fgrid'),mo=document.getElementById('fmore'),moa=document.getElementById('fmorea');
 var IX=null,dangTai=false,hit=[],hienN=0,LO=36,daDung=false,PRE='${R2_URL}';
 function khoiTinh(){return document.getElementById('fstatic')}
+/* bỏ dấu tiếng Việt để gõ "le van sy" ra "Lê Văn Sỹ". (\\u0300-\\u036f = dấu tổ hợp NFD; lưới new Function kiểm cú pháp lúc dựng) */
+function kd(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/đ/g,'d')}
 /* Chỉ mục cắt tiền tố kho R2 cho nhẹ -> ở đây ghép lại. Ảnh CHƯA mirror thì lưu nguyên URL gốc
    (cloudinary/daitheky) nên để nguyên; '/anh/...' là ảnh đại diện, cũng để nguyên.
    ⚠️ ĐỪNG dùng regex ở đây: script này nằm trong template literal của build.mjs, dấu \\ bị NUỐT
@@ -230,20 +233,20 @@ return '<a class="card" href="/nha-dat/'+r[0]+'.html"><div class="thumb"><img sr
 '<p class="dim">'+(r[10]?r[10]+', ':'')+IX.qt[r[5]]+' · cập nhật '+r[11]+'</p></div></a>'}
 function veThem(){var lat=hit.slice(hienN,hienN+LO);gr.insertAdjacentHTML('beforeend',lat.map(the).join(''));hienN+=lat.length;
 mo.hidden=hienN>=hit.length;if(!mo.hidden)moa.textContent='Xem thêm '+Math.min(LO,hit.length-hienN)+' căn (còn '+(hit.length-hienN)+') →'}
-function batLoc(){return !!(fq.value||fv.value||g1.value!==''||g2.value!==''||d1.value!=='')}
+function batLoc(){return !!(fq.value||fv.value||g1.value!==''||g2.value!==''||d1.value!==''||ft.value.trim())}
 function loc(){if(!daDung)return;var st=khoiTinh();
 if(!batLoc()){if(st)st.hidden=false;gr.hidden=true;mo.hidden=true;kq.textContent='';return}
 if(!IX){if(!dangTai){dangTai=true;kq.textContent='→ đang tải…';
 fetch('/tim-kiem.json').then(function(r){return r.json()}).then(function(j){IX=j;dangTai=false;loc()})
 .catch(function(){dangTai=false;kq.textContent='→ lỗi tải, thử lại'})}return}
-var q=fq.value,v=fv.value,lo=parseFloat(g1.value),hi=parseFloat(g2.value),dt=parseFloat(d1.value);
+var q=fq.value,v=fv.value,lo=parseFloat(g1.value),hi=parseFloat(g2.value),dt=parseFloat(d1.value),kw=kd(ft.value.trim());
 if(isNaN(lo))lo=0;if(isNaN(hi))hi=1e9;if(isNaN(dt))dt=0;
 var qi=q?IX.q.indexOf(q):-1,vi=v?IX.v.indexOf(v):-1;
 /* CHỌN rồi mà KHÔNG có trong chỉ mục -> 0 CĂN. TUYỆT ĐỐI không rơi về "không lọc":
    16/07 ô chọn dùng slug 'quan-7-phu-my-hung' còn chỉ mục dùng 'quan-7' -> indexOf=-1 -> qi<0
    -> lọc Quận 7 mà XỔ RA TOÀN BỘ 12.684 căn (Tuấn bắt). Lệch slug đã sửa, đây là lưới chặn dưới. */
 if((q&&qi<0)||(v&&vi<0))hit=[];
-else hit=IX.r.filter(function(r){return (qi<0||r[5]===qi)&&(vi<0||r[6]===vi)&&r[3]>=lo&&r[3]<=hi&&(!dt||r[7]>=dt)});
+else hit=IX.r.filter(function(r){return (qi<0||r[5]===qi)&&(vi<0||r[6]===vi)&&r[3]>=lo&&r[3]<=hi&&(!dt||r[7]>=dt)&&(!kw||kd(r[1]).indexOf(kw)>=0)});
 if(st)st.hidden=true;gr.hidden=false;gr.innerHTML='';hienN=0;
 kq.textContent='→ '+hit.length+' căn khớp';
 if(!hit.length){gr.innerHTML='<p class="dim">Không có căn nào khớp. Anh chị nới tầm giá/diện tích, hoặc gọi ${PHONE_FMT} để Tuấn tìm giúp.</p>';mo.hidden=true;return}
@@ -251,7 +254,7 @@ veThem()}
 function dung(){daDung=true;loc()}
 moa.addEventListener('click',function(e){e.preventDefault();veThem()});
 [fq,fv].forEach(function(x){x.addEventListener('change',dung)});
-[g1,g2,d1].forEach(function(x){x.addEventListener('input',dung)});})();`;
+[g1,g2,d1,ft].forEach(function(x){x.addEventListener('input',dung)});})();`;
   // 🛡 LƯỚI (16/07, dính 2 lần): script này nằm TRONG template literal của build.mjs -> dấu \\ bị NUỐT.
   // Lần 1: regex /^https?:\\/\\// in ra thành /^https?:/// -> JS đọc // là COMMENT -> CHẾT CẢ BỘ LỌC,
   // mà build vẫn báo 'Dựng xong' nên deploy web hỏng lúc nào không hay. Giờ kiểm cú pháp NGAY LÚC DỰNG.
@@ -487,6 +490,8 @@ h2:before{content:'';position:absolute;left:0;top:.25em;bottom:.25em;width:4px;b
 .frange{display:flex;align-items:center;gap:6px;font-size:.95rem;color:#5a4a4e}
 .frange input{width:64px;padding:8px 9px;border:1px solid var(--vien);border-radius:9px;font:inherit;background:var(--nen);color:var(--chu);text-align:center}
 .frange input:focus{outline:2px solid var(--vang)}
+.ftxt{padding:9px 12px;border:1px solid var(--vien);border-radius:9px;font:inherit;color:var(--chu);background:var(--nen);min-width:180px;flex:1 1 180px;max-width:260px}
+.ftxt:focus{outline:2px solid var(--vang)}
 .xemtat{margin:6px 0 4px}.xemtat a{font-size:.9rem;color:var(--chinh2);font-weight:600;text-decoration:none}.xemtat a:hover{text-decoration:underline}
 /* Phân trang khu vực (15/07) — nút to đủ bấm bằng ngón cái trên mobile (44px), tự xuống dòng khi nhiều trang */
 .pager{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;margin:22px 0 8px}
