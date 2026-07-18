@@ -11,6 +11,7 @@ mkdirSync('data/blog', { recursive: true });
 // ---- kiến thức nghề (brain/) nạp theo nhóm ----
 const doc = f => { try { return readFileSync('../brain/' + f, 'utf8').slice(0, 6000); } catch (e) { return ''; } };
 const BRAIN = { phaply: doc('04-phap-ly.md'), thamdinh: doc('03-tham-dinh-can.md') + '\n' + doc('02-dinh-gia.md'), khuvuc: doc('01-khu-vuc.md') };
+BRAIN.phongthuy = BRAIN.thamdinh; BRAIN.chothue = BRAIN.phaply; BRAIN.quyhoach = BRAIN.phaply;   // nhóm mới 18/07 dùng lại kiến thức gần nhất
 
 // ---- số liệu THẬT từ kho (cho bài khu vực — chống bịa) ----
 let KHO = {};
@@ -147,6 +148,106 @@ D('giu-tien-hay-mua-nha-luc-thi-truong-cham', 'Thị trường chậm: người 
 D('mua-nha-tu-tin-chinh-chu', 'Săn tin chính chủ để né phí môi giới: được gì mất gì, và những rủi ro ít ai kể', 'chienluoc');
 D('ho-so-mua-nha-cho-nguoi-tu-kinh-doanh', 'Người kinh doanh tự do khó chứng minh thu nhập: cách chuẩn bị hồ sơ mua nhà - vay vốn từ sớm', 'chienluoc');
 
+// ====== ĐỢT 2 (18/07 — Tuấn duyệt): +90 đề tài, pub nối tiếp đợt 1 từ 05/08 (4 bài/ngày, xử ở pubOf) ======
+// G. PHÁP LÝ SÂU + CHO THUÊ PHÁP LÝ (18)
+D('hop-dong-thue-nha-dieu-khoan-bao-ve-chu', 'Cho thuê nhà: điều khoản nào phải có trong hợp đồng để chủ nhà không thiệt khi khách phá ngang, chậm tiền, sang nhượng lụi', 'phaply');
+D('hop-dong-thue-nha-dieu-khoan-bao-ve-khach-thue', 'Đi thuê nhà: những điều khoản bảo vệ người thuê — tiền cọc, tăng giá, chấm dứt trước hạn, chi phí đầu tư sửa chữa', 'phaply');
+D('lay-lai-nha-cho-thue-truoc-han', 'Muốn lấy lại nhà đang cho thuê trước hạn: trình tự thương lượng, bồi thường thế nào cho êm đẹp đôi bên', 'phaply');
+D('khach-thue-khong-tra-nha-xu-ly', 'Khách thuê hết hạn không chịu trả nhà: các bước xử lý đúng luật, vì sao tuyệt đối không tự ý cắt điện nước, khóa cửa', 'phaply');
+D('con-dau-thua-ke-nha-khi-khong-di-chuc', 'Nhà không có di chúc chia thế nào: hàng thừa kế, phần của con dâu con rể, các ca tranh chấp điển hình', 'phaply');
+D('tang-cho-nha-cho-con-giu-quyen-o', 'Sang tên nhà cho con nhưng sợ mất chỗ ở về già: tặng cho có điều kiện, giữ quyền ở lại làm sao cho chắc', 'phaply');
+D('mua-nha-phat-hien-chu-cu-no-nan', 'Mua xong mới biết chủ cũ nợ nần tứ phía, nhà từng bị siết: cách kiểm tra và phòng từ trước khi cọc', 'phaply');
+D('giay-coc-viet-tay-co-gia-tri-khong', 'Giấy cọc viết tay có giá trị pháp lý không: tờ A4 cần những gì để đủ sức bảo vệ tiền tỷ của bạn', 'phaply');
+D('mat-so-hong-lam-lai-the-nao', 'Mất sổ hồng: trình tự báo mất, làm lại sổ và cách đề phòng kẻ gian lợi dụng sổ cũ', 'phaply');
+D('nha-dat-ke-bien-thi-hanh-an', 'Nhà đang bị kê biên, thi hành án: nhận biết thế nào trước khi cọc — mua kiểu gì cũng mất tiền', 'phaply');
+D('nha-mua-chung-von-gop-ly-hon', 'Vợ chồng ly hôn chia nhà thế nào: tài sản chung riêng, nhà mua trước hôn nhân, nhà cha mẹ cho', 'phaply');
+D('nha-co-nguoi-dang-ky-thuong-tru-la', 'Mua nhà còn thường trú của người lạ: có sao không, cách yêu cầu chuyển đi trước khi giao dịch', 'phaply');
+D('xay-nha-khong-phep-hop-thuc-hoa', 'Nhà xây sai phép, không phép: mức xử lý hiện nay, khi nào hợp thức hóa được — kiểm tra gì trước khi mua', 'phaply');
+D('mua-ban-nha-hai-gia-rui-ro', 'Hợp đồng hai giá khi mua bán nhà: lợi trước mắt, họa dài lâu — vì sao người mua thiệt nhất', 'phaply');
+D('thoi-hieu-khoi-kien-tranh-chap-nha', 'Tranh chấp nhà đất để lâu có mất quyền kiện không: các mốc thời gian phải nhớ', 'phaply');
+D('vo-chong-mot-nguoi-dung-ten-mua-nha', 'Nhà mua trong hôn nhân nhưng một người đứng tên: của chung hay của riêng — hiểu đúng để khỏi thiệt', 'phaply');
+D('nguoi-nuoc-ngoai-viet-kieu-mua-nha', 'Việt kiều, người nước ngoài mua nhà ở Việt Nam: được mua gì, đứng tên thế nào theo luật hiện hành', 'phaply');
+D('nha-2-so-nha-cu-moi', 'Một căn nhà hai số nhà, số cũ số mới lẫn lộn: rắc rối giấy tờ và cách xử lý cho khớp', 'phaply');
+// H. VAY & TÀI CHÍNH ĐỢT 2 (10)
+D('so-sanh-lai-suat-ngan-hang-chon-dau', 'Chọn ngân hàng vay mua nhà: đừng chỉ nhìn lãi suất chào — phí ẩn, biên độ thả nổi, phạt trả sớm mới là chỗ ăn nhau', 'taichinh');
+D('vay-mua-nha-bao-nhieu-phan-tram-thu-nhap', 'Khoản trả góp bao nhiêu phần trăm thu nhập là an toàn: ngưỡng vẫn gồng được khi lãi tăng, nhà có biến cố', 'taichinh');
+D('ho-so-vay-bi-tu-choi-ly-do', 'Hồ sơ vay mua nhà bị từ chối: những lý do thật ngân hàng ít nói thẳng và cách chữa từng lỗi', 'taichinh');
+D('bao-hiem-khoan-vay-co-bat-buoc', 'Bảo hiểm khoản vay khi mua nhà: bắt buộc hay bị ép mua, từ chối được không, mặc cả được không', 'taichinh');
+D('mua-nha-luc-lai-cao-hay-cho-lai-giam', 'Lãi suất đang cao: mua ngay rồi tính tiếp hay chờ lãi giảm — bài toán ít ai tính đủ', 'taichinh');
+D('tien-nhan-roi-mua-nha-hay-gui-tiet-kiem', 'Có vài tỷ nhàn rỗi: mua nhà cho thuê hay gửi tiết kiệm — so dòng tiền và công sức 5 năm', 'taichinh');
+D('ban-nha-tien-ve-lam-gi-an-toan', 'Bán nhà xong cầm cục tiền tỷ: giữ ở đâu, chia thế nào cho an toàn trong lúc chờ mua căn mới', 'taichinh');
+D('vay-nong-de-coc-nha-nguy-hiem', 'Vay nóng để kịp đặt cọc nhà: cái bẫy chi phí và kịch bản mất cả cọc lẫn ôm nợ', 'taichinh');
+D('dong-tien-cho-thue-tinh-du-chi-phi', 'Tính dòng tiền nhà cho thuê cho đúng: trừ đủ trống nhà, sửa chữa, khấu hao — đừng lấy giá thuê chia giá mua rồi mừng', 'taichinh');
+D('mua-nha-dung-ten-cong-ty', 'Mua nhà đứng tên công ty: được lợi gì về thuế, vướng gì khi bán lại — ai nên ai không', 'taichinh');
+// I. PHONG THỦY (10) — nhóm mới
+D('phong-thuy-mua-nha-cai-nao-quan-trong', 'Phong thủy khi mua nhà: yếu tố nào đáng cân nhắc thật, yếu tố nào chỉ là nỗi sợ truyền miệng — góc nhìn người trong nghề', 'phongthuy');
+D('nha-huong-hop-tuoi-can-thiet-khong', 'Nhà không hợp tuổi có nên bỏ căn đang ưng: cách xử lý thực dụng thay vì bỏ lỡ căn nhà tốt', 'phongthuy');
+D('duong-dam-cua-nha-xau-that-khong', 'Nhà bị đường đâm, ngã ba chĩa thẳng cửa: xấu thật hay tâm lý — và cơ hội mua giá tốt cho người không kiêng', 'phongthuy');
+D('nha-gan-chua-nha-tho-nghia-trang', 'Nhà gần chùa, nhà thờ, nghĩa trang: được mất thật sự khi ở và mức trừ giá của thị trường', 'phongthuy');
+D('huong-bep-huong-ban-tho-quan-trong', 'Mua nhà xây sẵn lệch hướng bếp, hướng bàn thờ: chỉnh được không và tốn kém cỡ nào', 'phongthuy');
+D('mua-nha-nam-tuoi-kieng-ky', 'Năm tuổi, năm hạn có nên mua nhà: cách xử lý khi cả nhà lăn tăn mà căn nhà thì không chờ mình', 'phongthuy');
+D('so-nha-xau-co-dang-ky', 'Số nhà 13, 49, 53: có đáng bỏ qua một căn nhà tốt — chuyện thật từ các giao dịch', 'phongthuy');
+D('cay-xanh-truoc-nha-tot-hay-xau', 'Cây lớn trước cửa nhà: tài lộc hay tai họa — góc phong thủy và cả góc pháp lý cây xanh đô thị', 'phongthuy');
+D('ngay-gio-ky-cong-chung-nhap-trach', 'Chọn ngày đẹp ký công chứng, nhập trạch: cân thế nào giữa ngày giờ và rủi ro kéo dài giao dịch', 'phongthuy');
+D('phong-thuy-giup-ban-nha-nhanh', 'Bán nhà mãi không được, có phải tại phong thủy: những chỉnh sửa nhỏ giúp căn nhà "sáng" lên khi dẫn khách', 'phongthuy');
+// K. THẨM ĐỊNH ĐỢT 2 (12)
+D('ket-cau-nha-pho-xem-gi-khi-mua', 'Xem kết cấu nhà phố thế nào: móng, cột, sàn — dấu hiệu nhà đủ sức lên thêm tầng hay chỉ nên để vậy', 'thamdinh');
+D('nha-muon-tuong-chung-rui-ro', 'Nhà mượn tường, tường chung với hàng xóm: rủi ro lúc xây lại và cách kiểm tra từ trên sổ', 'thamdinh');
+D('nha-nghieng-lun-nut-co-mua-duoc', 'Nhà bị nghiêng, lún, nứt nhẹ: mức nào chấp nhận được, mức nào bỏ chạy — và chi phí xử lý thật', 'thamdinh');
+D('dien-nuoc-am-tuong-nha-cu', 'Mua nhà cũ: soi hệ điện nước âm tường thế nào để không dọn vào rồi tốn cả trăm triệu làm lại', 'thamdinh');
+D('nha-co-ham-xe-uu-nhuoc', 'Nhà có hầm để xe: cộng giá bao nhiêu là hợp lý và nỗi khổ mùa mưa ít ai kể trước', 'thamdinh');
+D('mai-ton-hay-mai-be-tong', 'Mái tôn hay mái bê tông: khác gì về giá, chống nóng, thấm dột — chọn sao khi mua nhà cũ', 'thamdinh');
+D('kiem-tra-nha-ngap-nuoc-truoc-mua', 'Đừng tin lời rao "không ngập": dấu vết ngập trong nhà, hỏi ai, kiểm tra thế nào trước khi mua', 'thamdinh');
+D('thang-may-nha-pho-dang-lap-khong', 'Nhà phố 5-6 tầng có đáng lắp thang máy: chi phí, diện tích mất và giá trị khi bán lại', 'thamdinh');
+D('nha-tan-trang-de-ban-nhan-dien', 'Nhà "tân trang để bán": nhận diện lớp sơn che khuyết điểm — chỗ nào phải gõ, phải soi khi đi xem', 'thamdinh');
+D('do-rong-hem-thuc-te-cach-do', 'Tin rao hẻm 4m nhưng thực tế 3m: cách đo hẻm cho đúng và vì sao từng tấc hẻm là tiền', 'thamdinh');
+D('ban-cong-lan-hem-hop-phap-khong', 'Ban công đua ra hẻm, lệch tầng lấn không gian: phần nào hợp pháp, phần nào có ngày bị buộc tháo', 'thamdinh');
+D('gieng-troi-thong-gio-nha-ong', 'Nhà ống kín bưng và nhà có giếng trời: chênh nhau bao nhiêu là đáng — sức khỏe và cả tiền điện', 'thamdinh');
+// L. KHU VỰC ĐỢT 2 (12)
+D('thao-dien-mua-nha-can-biet', 'Mua nhà khu Thảo Điền: đặc thù khu compound, biệt thự ven sông — ai hợp, ngân sách nào chen được', 'khuvuc:Quận 2');
+D('phu-my-hung-nha-pho-biet-thu', 'Nhà phố, biệt thự Phú Mỹ Hưng: vì sao giá vững qua các mùa — và những khoản phí riêng phải biết trước', 'khuvuc:Quận 7');
+D('cu-xa-do-thanh-ban-co-quan-3', 'Nhà cư xá Đô Thành, khu Bàn Cờ Quận 3: nét riêng khu cư xá cũ giữa trung tâm và giá hiện nay', 'khuvuc:Quận 3');
+D('khu-cho-lon-quan-5-mua-nha', 'Mua nhà khu Chợ Lớn Quận 5: giá trị thương mại nhà người Hoa và những điều người ngoài ít biết', 'khuvuc:Quận 5');
+D('binh-thanh-khu-nao-cao-rao', 'Bình Thạnh khu nào hay ngập, khu nào cao ráo: kinh nghiệm chọn khu trước khi chọn căn', 'khuvuc:Bình Thạnh');
+D('go-vap-phuong-nao-tien-trung-tam', 'Gò Vấp rộng lắm: khu nào gần trung tâm, tiện đi lại nhất — mặt bằng giá từng khu', 'khuvuc:Gò Vấp');
+D('truc-le-van-sy-vi-sao-dat-khach', 'Trục Lê Văn Sỹ - Trần Quang Diệu: vì sao dân kinh doanh săn lùng — giá mặt tiền và nhà hẻm quanh trục', 'khuvuc:Phú Nhuận');
+D('nha-hem-quan-1-dang-mua-khong', 'Nhà hẻm Quận 1 nhỏ mà giá cao: mua để ở hay để giữ tiền — ai nên và ai không nên', 'khuvuc:Quận 1');
+D('khu-bac-hai-cu-xa-quan-10', 'Khu Bắc Hải, cư xá Quận 10: vùng yên tĩnh giữa trung tâm — đặc điểm nhà và mặt bằng giá', 'khuvuc:Quận 10');
+D('khu-bau-cat-tan-binh', 'Khu Bàu Cát Tân Bình: bàn cờ vuông vức, dân trí cao — giá nhà và đặc điểm từng trục đường', 'khuvuc:Tân Bình');
+D('metro-ha-tang-anh-huong-gia-nha', 'Metro và các công trình hạ tầng lớn TP.HCM: giá nhà quanh tuyến thay đổi thế nào — kỳ vọng và thực tế', 'khuvuc:Bình Thạnh');
+D('chon-quan-theo-cho-lam-truong-con', 'Chọn quận mua nhà theo chỗ làm và trường của con: khung quyết định tỉnh táo thay vì chạy theo lời đồn', 'khuvuc:Phú Nhuận');
+// M. CHO THUÊ & QUẢN LÝ (8) — nhóm mới
+D('dam-phan-gia-thue-nha-mat-bang', 'Thuê nhà, thuê mặt bằng: đàm phán giá và điều khoản tăng giá hằng năm thế nào để không bị hớ', 'chothue');
+D('tu-quan-ly-hay-thue-cong-ty-quan-ly', 'Cho thuê nhà: tự quản hay giao công ty quản lý — chi phí và mức đau đầu của từng kiểu', 'chothue');
+D('loc-khach-thue-tu-vong-nhan-tin', 'Lọc khách thuê ngay từ vòng nhắn tin: dấu hiệu khách ở bền và dấu hiệu rủi ro', 'chothue');
+D('nha-trong-lau-khong-ai-thue', 'Nhà trống mấy tháng không ai thuê: hạ giá, sửa sang hay đổi công năng — tính thế nào cho đúng', 'chothue');
+D('tang-gia-thue-khong-mat-khach', 'Tăng giá thuê mà không mất khách tốt: thời điểm, mức tăng và cách mở lời', 'chothue');
+D('coc-thue-nha-bao-nhieu-thang', 'Tiền cọc thuê nhà 1, 2 hay 3 tháng: chuẩn thị trường từng loại nhà và xử lý cọc khi trả nhà', 'chothue');
+D('ban-nha-xong-thue-lai-chinh-can', 'Bán nhà xong thuê lại chính căn đó ở tiếp: khi nào hợp lý và thỏa thuận thế nào cho chặt', 'chothue');
+D('xay-sua-nha-de-cho-thue-toi-uu', 'Sửa nhà, chia phòng để cho thuê: những nâng cấp đáng tiền nhất và giới hạn pháp lý phải biết', 'chothue');
+// N. CHIẾN LƯỢC ĐỢT 2 (10)
+D('dau-gia-nha-phat-mai-co-nen', 'Mua nhà phát mãi, đấu giá ngân hàng: rẻ thật không và những rủi ro phải cân trước khi ham', 'chienluoc');
+D('san-hang-ngop-van-minh', 'Săn hàng "ngộp": cách xác minh ngộp thật hay chiêu bán hàng, và trả giá sao cho văn minh', 'chienluoc');
+D('ban-nha-cho-nguoi-quen', 'Bán nhà cho người quen giá tình cảm: những rạn nứt hay gặp và cách làm cho trọn đôi đường', 'chienluoc');
+D('mot-can-nha-chuc-gia-rao', 'Một căn nhà chục môi giới rao chục giá: vì sao loạn giá và người mua nên tin con số nào', 'chienluoc');
+D('ky-gui-doc-quyen-hay-tha-noi', 'Bán nhà: ký gửi độc quyền một môi giới hay thả cho chục người cùng rao — được mất từng kiểu', 'chienluoc');
+D('lam-viec-voi-moi-gioi-hieu-qua', 'Người mua làm việc với môi giới sao cho hiệu quả: nói rõ nhu cầu thật, đừng giấu ngân sách', 'chienluoc');
+D('khach-che-nha-ep-gia-dap-sao', 'Người bán gặp khách chê nhà để ép giá: phân biệt chê thật với chiêu trò và cách đáp', 'chienluoc');
+D('mua-nha-tu-xa-qua-video', 'Đang ở xa cần mua nhà: xem qua video call, nhờ ai kiểm tra hộ — quy trình an toàn từng bước', 'chienluoc');
+D('can-mua-nha-gap-1-thang', 'Cần mua nhà gấp trong một tháng: rút gọn quy trình mà không rút gọn an toàn', 'chienluoc');
+D('tien-ich-quanh-nha-quyet-dinh-gia', 'Bán kính 500m quanh nhà quyết định giá: chợ, trường, bệnh viện — cách chấm điểm vị trí khi so hai căn', 'chienluoc');
+// O. QUY HOẠCH & THỊ TRƯỜNG (10) — nhóm mới
+D('doc-ban-do-quy-hoach-1-2000', 'Tự đọc bản đồ quy hoạch 1/2000: màu nào là gì, tra ở đâu, hiểu sao cho đúng để khỏi mua nhầm', 'quyhoach');
+D('quy-hoach-treo-mua-hay-tranh', 'Nhà dính quy hoạch treo giá rẻ hẳn: có nên mua và những kịch bản có thể xảy ra với đồng tiền của bạn', 'quyhoach');
+D('bang-gia-dat-moi-anh-huong-nguoi-mua-ban', 'Bảng giá đất mới sát thị trường: thuế phí sang tên đổi thế nào — người mua kẻ bán ai chịu nhiều hơn', 'quyhoach');
+D('nhan-dien-sot-dat-ao', 'Nhận diện sốt đất ảo: các dấu hiệu bơm thổi kinh điển và cách đứng ngoài cơn say đám đông', 'quyhoach');
+D('thi-truong-cham-nguoi-ban-lam-gi', 'Thị trường chậm: người cần bán nên định giá và làm mới tin rao thế nào để không chìm nghỉm', 'quyhoach');
+D('dinh-gia-nha-online-tin-duoc-khong', 'Định giá nhà bằng công cụ online: sai lệch cỡ nào và dùng sao cho khôn ngoan', 'quyhoach');
+D('nha-pho-trung-tam-hay-dat-nen-ven', 'Tiền tỷ nên để đâu: nhà phố trung tâm hay đất nền vùng ven — khẩu vị rủi ro của từng lựa chọn', 'quyhoach');
+D('chu-ky-bat-dong-san-mua-dung-nhip', 'Chu kỳ bất động sản: hiểu nhịp lên xuống để không mua đúng đỉnh, bán đúng đáy', 'quyhoach');
+D('den-bu-giai-toa-quyen-loi-chu-nha', 'Nhà trong diện giải tỏa: quyền lợi đền bù tính thế nào và các bước chuẩn bị để không thiệt', 'quyhoach');
+D('an-ninh-khu-vuc-kiem-tra-truoc-mua', 'Kiểm tra an ninh khu vực trước khi mua nhà: hỏi ai, quan sát gì, nên ghé mấy giờ', 'quyhoach');
+
 // ---- SYS prompt (luật content Tuấn + style pain-point từ memory faq-pain-point) ----
 const SYS = `Bạn là Tuấn Sài Gòn — môi giới bất động sản trực tiếp hơn 5 năm ở khu trung tâm TP.HCM (Quận 1, 3, 5, 10, Phú Nhuận, Bình Thạnh, Gò Vấp, Tân Bình), viết CẨM NANG cho người mua/bán nhà lẻ trên website tuansaigon.com.
 PHONG CÁCH: viết như người trong nghề kể cho khách nghe — chững chạc, đời thường, thuần Việt 100%, có ví dụ tiền tỷ cụ thể kiểu Sài Gòn. Xưng "Tuấn" khi kể kinh nghiệm thực tế. KHÔNG icon, KHÔNG hashtag, KHÔNG xen tiếng Anh, KHÔNG "cơ hội vàng/hiếm có/đừng bỏ lỡ/liên hệ ngay/inbox".
@@ -157,8 +258,12 @@ CHÍNH XÁC (lĩnh vực pháp lý - tiền bạc, bịa sai là hại khách): 
 TRẢ VỀ DUY NHẤT JSON (không markdown, không giải thích): {"title":"tiêu đề pain-point ≤75 ký tự","mota":"mô tả 140-160 ký tự cho Google","bai":"nội dung HTML chỉ dùng thẻ <p> <h2> <ul> <li> <b>"}`;
 
 // ---- lịch đăng rải: 20 bài đầu hôm nay, sau đó 4 bài/ngày ----
+// Đợt 2 (idx ≥ 112): nối tiếp đợt 1 — đợt 1 kết pub 04/08/2026, đợt 2 chạy 4 bài/ngày từ 05/08.
 const d0 = new Date();
-const pubOf = i => { const d = new Date(d0); if (i >= 20) d.setDate(d.getDate() + 1 + Math.floor((i - 20) / 4)); return d.toISOString().slice(0, 10); };
+const pubOf = i => {
+  if (i >= 112) { const d2 = new Date('2026-08-05'); d2.setDate(d2.getDate() + Math.floor((i - 112) / 4)); return d2.toISOString().slice(0, 10); }
+  const d = new Date(d0); if (i >= 20) d.setDate(d.getDate() + 1 + Math.floor((i - 20) / 4)); return d.toISOString().slice(0, 10);
+};
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
 let ok = 0, loi = 0, idx = -1;

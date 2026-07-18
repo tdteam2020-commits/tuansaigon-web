@@ -935,7 +935,7 @@ ${areasLive.filter(a => a.rows.length).map(a => { const s = statsOf(a.rows); ret
 
 // ================= CẨM NANG (blog — Tuấn chốt 12/07, mục tiêu 100-200 bài pain-point) =================
 // Bài do blog.mjs viết sẵn vào data/blog/*.json; chỉ ĐĂNG bài tới hạn pub (đăng rải 4 bài/ngày — build 2 cữ/ngày tự nhả).
-const NHOM_TEN = { phaply: 'Pháp lý & giao dịch', taichinh: 'Vay & tài chính', thamdinh: 'Thẩm định căn nhà', khuvuc: 'Khu vực & mặt bằng giá', chienluoc: 'Kinh nghiệm mua bán' };
+const NHOM_TEN = { phaply: 'Pháp lý & giao dịch', taichinh: 'Vay & tài chính', thamdinh: 'Thẩm định căn nhà', khuvuc: 'Khu vực & mặt bằng giá', chienluoc: 'Kinh nghiệm mua bán', phongthuy: 'Phong thủy nhà đất', chothue: 'Cho thuê & quản lý', quyhoach: 'Quy hoạch & thị trường' };
 let BAI = [];
 try {
   const homNay = new Date().toISOString().slice(0, 10);
