@@ -68,7 +68,15 @@ function cleanRows(rows) {
   let drop = 0;
   const nowTs = Math.floor(Date.now() / 1000);
   for (const l of rows) {
-    if (l.up > nowTs) l.up = nowTs;   // ngày tương lai (nguồn ghi dd/mm bị hiểu mm/dd) -> ghim về hôm nay
+    // (18/07 Tuấn bắt) Ngày TƯƠNG LAI = nguồn CĐMG ghi dd/mm bị parse mm/dd. Trước đây GHIM VỀ HÔM NAY -> căn
+    // hỏng ngày LUÔN thành "mới nhất" -> kẹt đầu trang chủ mãi (căn 211 Hoàng Hoa Thám 2-3 ngày). Giờ KHÔI PHỤC:
+    // hoán đổi ngày<->tháng (08/07 bị đọc 07/08 -> đổi lại 08/07). Đổi ra vẫn tương lai/không hợp lệ -> lùi 40 ngày
+    // (coi như cũ, không cho chiếm "mới cập nhật"). KHÔNG dùng ngày build làm mốc nữa.
+    if (l.up > nowTs) {
+      const d = new Date(l.up * 1000);
+      const sw = Math.floor(new Date(d.getFullYear(), d.getDate() - 1, d.getMonth() + 1).getTime() / 1000);
+      l.up = (sw > 0 && sw <= nowTs) ? sw : (nowTs - 40 * 86400);
+    }
     l.duong = DUONG_FIX[String(l.duong || '').trim()] || String(l.duong || '').trim();
     if (!duongOk(l.duong)) { drop++; continue; }
     out.push(l);
