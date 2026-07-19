@@ -436,7 +436,7 @@ W('style.css', `
 /* THEME ĐỎ RƯỢU VANG / ĐỎ ĐÔ (Tuấn chốt 16/07) — trước là xanh rêu #5c1a2b.
    Biến đã đổi tên --xanh -> --chinh cho khỏi đánh đố (tên "xanh" mà màu đỏ).
    Giữ VÀNG ĐỒNG làm màu nhấn: vàng + đỏ đô là cặp kinh điển, hợp phân khúc cao cấp. */
-:root{--chinh:#3a1210;--chinh2:#9c7b33;--vang:#d9b36a;--vang2:#e9d6a8;--nen:#f7f4ee;--chu:#1c1b17;--vien:#e5ddc9;--do:#b3392f}
+:root{--chinh:#6e2637;--chinh2:#9c7b33;--vang:#d9b36a;--vang2:#e9d6a8;--nen:#f7f4ee;--chu:#1c1b17;--vien:#e5ddc9;--do:#b3392f}
 *{box-sizing:border-box;margin:0}html{scroll-behavior:smooth}
 body{font:16px/1.7 'Be Vietnam Pro',-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--chu);background:var(--nen)}
 .wrap{max-width:1120px;margin:0 auto;padding:0 20px}a{color:var(--chinh2)}
@@ -474,7 +474,7 @@ h2{font-size:1.55rem;margin:34px 0 14px;color:var(--chu)}
 .stat b{display:inline;font-size:1.1rem;color:var(--chinh);font-family:'Lora',serif;margin-right:5px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:20px;margin:16px 0}
 .card{background:#fff;border:1px solid var(--vien);border-radius:0;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:.18s}
-.card:hover{transform:translateY(-2px);border-color:var(--vang);box-shadow:0 10px 26px rgba(58,18,16,.1)}
+.card:hover{transform:translateY(-2px);border-color:var(--vang);box-shadow:0 10px 26px rgba(80,25,45,.1)}
 .thumb{position:relative;overflow:hidden;aspect-ratio:16/10;background:#ece3df}
 .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
 .card:hover .thumb img{transform:scale(1.05)}
@@ -595,7 +595,7 @@ article p{margin:10px 0}table{font-size:.97rem}
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s ease}
 .reveal.in{opacity:1;transform:none}
 /* thanh Goi/Zalo co dinh day mobile (design 3a) — desktop an */
-.mbar{display:none;grid-template-columns:1fr 1fr;gap:10px;position:fixed;left:0;right:0;bottom:0;padding:12px 16px;background:var(--nen);border-top:1px solid var(--vien);box-shadow:0 -4px 16px rgba(58,18,16,.12);z-index:60}
+.mbar{display:none;grid-template-columns:1fr 1fr;gap:10px;position:fixed;left:0;right:0;bottom:0;padding:12px 16px;background:var(--nen);border-top:1px solid var(--vien);box-shadow:0 -4px 16px rgba(80,25,45,.12);z-index:60}
 .mbar a{font-weight:700;font-size:.95rem;padding:14px;border-radius:8px;text-align:center;text-decoration:none}
 .mbar .mgoi{background:var(--vang);color:var(--chinh)}.mbar .mzalo{background:var(--chinh);color:#f1ead9}
 @media(max-width:860px){.dbody{grid-template-columns:1fr}.aside{position:static}}
