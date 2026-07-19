@@ -150,7 +150,7 @@ function page({ path, title, desc, ld = [], body, upDate, preloadImg }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
-<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}"><meta property="og:type" content="website"><meta property="og:locale" content="vi_VN">
+<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}"><meta property="og:type" content="website"><meta property="og:locale" content="vi_VN"><meta property="og:image" content="${SITE}/anh/tuan.jpg">
 <link rel="alternate" type="application/rss+xml" title="Tin mới ${BRAND.name}" href="${SITE}/feed.xml">
 <link rel="icon" href="/anh/logo-64.png">
 ${GA_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>
@@ -160,8 +160,8 @@ if(h.indexOf('tel:')===0)gtag('event','goi_dien',{event_category:'lien_he'});els
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 ${preloadImg ? `<link rel="preload" as="image" href="${preloadImg}" type="image/webp" fetchpriority="high">` : ''}
 <link rel="stylesheet" href="/style.css?v=${BUILD_V}">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Lora:ital,wght@0,400..700;1,400&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Lora:ital,wght@0,400..700;1,400&display=swap"></noscript>
 <script type="application/ld+json">${JSON.stringify(graph)}</script>
 </head>
 <body>
@@ -173,14 +173,12 @@ ${preloadImg ? `<link rel="preload" as="image" href="${preloadImg}" type="image/
 <main class="wrap">
 ${body}
 </main>
-<div class="fab">
-<a class="fz" href="${ZALO}" target="_blank" rel="noopener" aria-label="Nhắn Zalo cho Tuấn">Zalo</a>
-<a class="fc" href="tel:${BRAND.phone}" aria-label="Gọi Tuấn ${PHONE_FMT}">📞</a>
-</div>
+<div class="mbar"><a class="mgoi" href="tel:${BRAND.phone}">📞 Gọi Tuấn</a><a class="mzalo" href="${ZALO}" target="_blank" rel="noopener">Nhắn Zalo</a></div>
 <footer><div class="wrap">
 <p><strong>${BRAND.name}</strong> — ${BRAND.tagline}. Điện thoại/Zalo: <a href="tel:${BRAND.phone}">${BRAND.phone}</a>.</p>
 <p class="socials">${SOCIAL.filter(s => s.url).map(s => `<a href="${s.url}" target="_blank" rel="noopener">${s.ten}</a>`).join(' · ')}</p>
 <p>Khu vực phục vụ: ${esc(BRAND.areasText)} (tên quận cũ, quen dùng sau sáp nhập 2025).</p>
+<p><a href="/lien-he.html">Liên hệ & ký gửi nhà</a> · <a href="/hoi-dap.html">Hỏi đáp</a> · <a href="/gioi-thieu.html">Giới thiệu Tuấn</a> · <a href="/cam-nang/">Cẩm nang</a></p>
 <p class="dim">Thông tin trên trang cập nhật ${esc(upDate)}. Giá chào bán có thể thay đổi theo thời điểm — gọi để xác nhận căn còn hay đã cọc.</p>
 </div></footer>
 <script>
@@ -194,8 +192,8 @@ document.querySelectorAll('.card,.stat,.qa,article h2').forEach(function(el,i){e
 function card(l) {
   return `<a class="card" data-gia="${l.gia_ty}" data-quan="${slug(l.quan)}" data-vitri="${esc(l.vitri || '')}" data-coc="${l.coc ? 1 : 0}" href="/nha-dat/${l.url}.html">
 <div class="thumb"><img src="${esc(l.anh[0])}" alt="${esc(tieuDe(l))}" loading="lazy" onerror="this.parentNode.style.display='none'">
-<span class="badge"><b>${esc(l.gia_text)}</b></span>${l.coc ? '<span class="soldtag">ĐÃ CỌC</span>' : (l.vitri ? `<span class="vt">${esc(l.vitri)}</span>` : '')}${l.xm && !l.coc ? '<span class="xmtag">✔ Đã kiểm chứng</span>' : ''}</div>
-<div class="ci"><h3>${esc(tieuDe(l))}</h3>
+${l.coc ? '<span class="soldtag">ĐÃ CỌC</span>' : ''}${l.xm && !l.coc ? '<span class="xmtag">✔ Đã kiểm chứng</span>' : ''}</div>
+<div class="ci"><div class="cirow"><span class="ctag">${esc(l.vitri || l.loai || 'Nhà phố')}</span><span class="cgia">${l.coc ? 'ĐÃ CỌC' : esc(l.gia_text)}</span></div><h3>${esc(tieuDe(l))}</h3>
 <p class="tsm">${l.dt ? '<b>' + num(l.dt) + 'm²</b>' : ''}${l.tang ? ' · ' + num(l.tang, 0) + ' tầng' : ''}${l.ngang ? ' · ngang ' + num(l.ngang) + 'm' : ''}</p>
 <p class="dim">${esc(l.phuong ? l.phuong + ', ' : '')}${esc(l.quan)} · cập nhật ${dViet(l.up)}</p></div></a>`;
 }
@@ -235,9 +233,8 @@ function kd(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\\u0300-\
    -> /^https?:\\/\\// in ra thành /^https?:/// -> JS đọc // là COMMENT -> CHẾT CẢ BỘ LỌC (dính 16/07). */
 function anh(s){return !s?'/anh/anh-dai-dien.svg':(s.slice(0,4)==='http'||s.charAt(0)==='/'?s:PRE+s)}
 function the(r){var vt=IX.v[r[6]];
-return '<a class="card" href="/nha-dat/'+r[0]+'.html"><div class="thumb"><img src="'+anh(r[2])+'" alt="'+r[1]+'" loading="lazy" onerror="this.parentNode.style.display=\\'none\\'">'+
-'<span class="badge"><b>'+r[4]+'</b></span>'+(vt?'<span class="vt">'+vt+'</span>':'')+'</div>'+
-'<div class="ci"><h3>'+r[1]+'</h3><p class="tsm">'+(r[7]?'<b>'+r[7]+'m²</b>':'')+(r[8]?' · '+r[8]+' tầng':'')+(r[9]?' · ngang '+r[9]+'m':'')+'</p>'+
+return '<a class="card" href="/nha-dat/'+r[0]+'.html"><div class="thumb"><img src="'+anh(r[2])+'" alt="'+r[1]+'" loading="lazy" onerror="this.parentNode.style.display=\\'none\\'"></div>'+
+'<div class="ci"><div class="cirow"><span class="ctag">'+(vt||'Nhà phố')+'</span><span class="cgia">'+r[4]+'</span></div><h3>'+r[1]+'</h3><p class="tsm">'+(r[7]?'<b>'+r[7]+'m²</b>':'')+(r[8]?' · '+r[8]+' tầng':'')+(r[9]?' · ngang '+r[9]+'m':'')+'</p>'+
 '<p class="dim">'+(r[10]?r[10]+', ':'')+IX.qt[r[5]]+' · cập nhật '+r[11]+'</p></div></a>'}
 function veThem(){var lat=hit.slice(hienN,hienN+LO);gr.insertAdjacentHTML('beforeend',lat.map(the).join(''));hienN+=lat.length;
 mo.hidden=hienN>=hit.length;if(!mo.hidden)moa.textContent='Xem thêm '+Math.min(LO,hit.length-hienN)+' căn (còn '+(hit.length-hienN)+') →'}
@@ -270,7 +267,8 @@ moa.addEventListener('click',function(e){e.preventDefault();veThem()});
   return js;
 }
 const faqLd = qa => ({ '@type': 'FAQPage', mainEntity: qa.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) });
-const faqHtml = qa => qa.map(f => `<details class="qa"><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n');
+// (19/07 handoff) FAQ = thẻ MỞ SẴN, câu hỏi là H3 (AI/Google đọc thẳng — accordion cũ giấu nội dung)
+const faqHtml = qa => qa.map(f => `<div class="qa"><h3>${esc(f.q)}</h3><p>${esc(f.a)}</p></div>`).join('\n');
 const crumbLd = items => ({ '@type': 'BreadcrumbList', itemListElement: items.map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: SITE + path })) });
 
 // ---------- trang chi tiết căn ----------
@@ -297,6 +295,14 @@ function detailPage(l, today, tuongTu) {
         ...(l.dt ? { floorSize: { '@type': 'QuantitativeValue', value: l.dt, unitCode: 'MTK' } } : {}), ...(l.tang ? { numberOfFloors: l.tang } : {}),
         ...(l.pn ? { numberOfBedrooms: l.pn } : {}), ...(l.wc ? { numberOfBathroomsTotal: l.wc } : {}) },
       image: l.anh, offers: { '@type': 'Offer', price: l.gia_ty * 1e9, priceCurrency: 'VND', priceValidUntil: undefined, availability: l.coc ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock', description: l.coc ? 'Đã có khách đặt cọc' : `Giá chào ${l.gia_text}`, offeredBy: { '@id': `${SITE}/#agent` } } },
+    // RealEstateListing (spec SEO-HANDOFF 19/07) — streetAddress CHỈ tên đường, KHÔNG số nhà (luật thương hiệu)
+    { '@type': 'RealEstateListing', name: tieuDe(l), url: SITE + path,
+      ...(l.up ? { datePosted: new Date(l.up * 1000).toISOString().slice(0, 10) } : {}),
+      about: { '@type': 'SingleFamilyResidence',
+        ...(l.dt ? { floorSize: { '@type': 'QuantitativeValue', value: l.dt, unitCode: 'MTK' } } : {}),
+        ...(l.pn ? { numberOfRooms: Number(l.pn) || undefined } : {}),
+        address: { '@type': 'PostalAddress', streetAddress: 'Đường ' + l.duong, addressLocality: l.quan, addressRegion: 'TP.HCM', addressCountry: 'VN' } },
+      ...(!l.coc && l.gia_ty ? { offers: { '@type': 'Offer', price: l.gia_ty * 1e9, priceCurrency: 'VND' } } : {}) },
     crumbLd([['Trang chủ', '/'], ['Nhà đang bán', '/nha-dat/'], [tieuDe(l), path]]),
   ];
   const areaLink = AREAS.find(a => a.quan === l.quan);
@@ -333,14 +339,14 @@ ${l.cap ? `<h2>Đôi nét về căn này</h2>\n${l.cap.split(/\n+/).filter(x => 
 ${areaLink ? `<p>Xem thêm: <a href="/khu-vuc/${areaLink.slug}.html">nhà đang bán và mặt bằng giá khu ${esc(l.quan)}</a>.</p>` : ''}
 </article>
 <aside class="aside">
-<div class="who">${AVA ? `<img class="ava sm" src="${AVA}" alt="Tuấn Sài Gòn" width="74" height="74">` : ''}<div><strong>Tuấn Sài Gòn</strong><br><span class="dim">Môi giới trực tiếp — không qua trung gian</span></div></div>
+<div class="who">${AVA ? `<img class="ava sm" src="${AVA}" alt="Tuấn Sài Gòn" width="74" height="74">` : ''}<div><strong>Tuấn Sài Gòn</strong><br><span class="dim">Môi giới trực tiếp · hơn 5 năm</span></div></div>
 ${l.xm ? '<p class="xmnote">✔ Tuấn đã trực tiếp xác minh thông tin căn này</p>' : ''}
 <p class="dim">${l.coc ? 'Trạng thái' : 'Giá chào bán'}</p>
 <p class="gia">${l.coc ? '⛔ ĐÃ CỌC' : esc(l.gia_text)}</p>
-<p>${l.dt ? `<b>${num(l.dt)}m²</b>` : ''}${l.tang ? ` · ${num(l.tang, 0)} tầng` : ''}${l.vitri ? ` · ${esc(l.vitri)}` : ''}</p>
-<a class="btn gold" href="tel:${BRAND.phone}">📞 Gọi ngay · ${PHONE_FMT}</a>
-<a class="btn zalo" href="${ZALO}" target="_blank" rel="noopener">💬 Nhắn Zalo hỏi căn này</a>
-<p>Khi liên hệ, đọc mã tin <strong>${esc(l.ma)}</strong> — Tuấn gửi vị trí chính xác và xếp lịch xem nhà ngay.</p>
+<p>${l.dt ? `<b>${num(l.dt)}m²</b>` : ''}${!l.coc && l.dt && l.gia_ty ? ` · ~${num(l.gia_ty * 1000 / l.dt, 0)} triệu/m²` : ''}${l.tang ? ` · ${num(l.tang, 0)} tầng` : ''}${l.vitri ? ` · ${esc(l.vitri)}` : ''}</p>
+<a class="btn gold" href="tel:${BRAND.phone}">📞 Gọi Tuấn · ${PHONE_FMT}</a>
+<a class="btn zalo" href="${ZALO}" target="_blank" rel="noopener">Nhắn Zalo hỏi căn này</a>
+<p class="anote">Khi liên hệ, đọc mã tin <strong>${esc(l.ma)}</strong> — Tuấn gửi vị trí chính xác và xếp lịch xem nhà ngay.</p>
 </aside>
 </div>
 ${tuongTu && tuongTu.length ? `<h2>Căn tương tự đang bán tại ${esc(l.quan)}</h2><div class="grid">${tuongTu.map(card).join('')}</div>` : ''}`;
@@ -430,52 +436,54 @@ W('style.css', `
 /* THEME ĐỎ RƯỢU VANG / ĐỎ ĐÔ (Tuấn chốt 16/07) — trước là xanh rêu #5c1a2b.
    Biến đã đổi tên --xanh -> --chinh cho khỏi đánh đố (tên "xanh" mà màu đỏ).
    Giữ VÀNG ĐỒNG làm màu nhấn: vàng + đỏ đô là cặp kinh điển, hợp phân khúc cao cấp. */
-:root{--chinh:#5c1a2b;--chinh2:#8a2a3c;--vang:#c9a35c;--vang2:#e3c98f;--nen:#faf7f5;--chu:#2f2428;--vien:#e9e0dc;--do:#b3392f}
+:root{--chinh:#3a1210;--chinh2:#9c7b33;--vang:#d9b36a;--vang2:#e9d6a8;--nen:#f7f4ee;--chu:#1c1b17;--vien:#e5ddc9;--do:#b3392f}
 *{box-sizing:border-box;margin:0}html{scroll-behavior:smooth}
 body{font:16px/1.7 'Be Vietnam Pro',-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--chu);background:var(--nen)}
 .wrap{max-width:1120px;margin:0 auto;padding:0 20px}a{color:var(--chinh2)}
-h1,h2,h3,.logo{font-family:'Playfair Display','Be Vietnam Pro',serif}
-.top{background:linear-gradient(90deg,#5c1a2b,#7a2334);position:sticky;top:0;z-index:9;box-shadow:0 2px 16px rgba(60,15,25,.3)}
-.bar{display:flex;align-items:center;gap:18px;padding:12px 20px;flex-wrap:wrap}
-.logo{font-size:1.45rem;font-weight:800;color:#fff;text-decoration:none;letter-spacing:.2px}.logo span{color:var(--vang)}
-.top nav{display:flex;gap:2px;flex-wrap:wrap;flex:1}
-.top nav a{color:#f2dfe3;text-decoration:none;padding:7px 12px;border-radius:8px;font-size:.95rem;font-weight:500}
-.top nav a.on{color:#5c1a2b;background:var(--vang);font-weight:700}.top nav a:hover{background:rgba(255,255,255,.14);color:#fff}
-.call{background:linear-gradient(135deg,var(--vang),#b8904a);color:#211804;font-weight:700;text-decoration:none;padding:9px 18px;border-radius:999px;white-space:nowrap;box-shadow:0 3px 10px rgba(184,144,74,.35)}
-.call:hover{filter:brightness(1.06)}
+h1,h2{font-family:'Lora','Be Vietnam Pro',serif;font-weight:500}
+html{overflow-x:clip}
+.top{background:var(--chinh);position:sticky;top:0;z-index:9;border-bottom:1px solid rgba(241,234,217,.15)}
+.bar{display:flex;align-items:center;gap:18px;padding:14px 20px;flex-wrap:wrap}
+.logo{font-size:1.2rem;font-weight:700;color:#f1ead9;text-decoration:none;letter-spacing:.2px}.logo span{color:var(--vang)}
+.top nav{display:flex;gap:4px;flex-wrap:wrap;flex:1;justify-content:flex-end;margin-right:6px}
+.top nav a{color:#c9c0aa;text-decoration:none;padding:7px 12px;border-radius:8px;font-size:.95rem;font-weight:500}
+.top nav a.on{color:var(--vang);font-weight:600}.top nav a:hover{background:rgba(255,255,255,.08);color:#f1ead9}
+.call{border:1px solid var(--vang);color:var(--vang);font-weight:700;text-decoration:none;padding:9px 18px;border-radius:8px;white-space:nowrap}
+.call:hover{background:rgba(217,179,106,.12)}
 main{padding:30px 20px 48px}
-h1{font-size:2rem;line-height:1.25;margin:8px 0 14px;color:var(--chinh)}
-h2{font-size:1.4rem;margin:34px 0 14px;color:var(--chinh);position:relative;padding-left:14px}
-h2:before{content:'';position:absolute;left:0;top:.25em;bottom:.25em;width:4px;border-radius:4px;background:var(--vang)}
-.lead{font-size:1.06rem;color:#5a4a4e;margin-bottom:14px}.dim{color:#8b7d80;font-size:.9rem}
-.crumb{font-size:.88rem;color:#8b7d80;margin-bottom:6px}.crumb a{text-decoration:none}
-.hero{position:relative;background:linear-gradient(120deg,#5c1a2b 0%,#8a2a3c 55%,#6a1f3a 100%);color:#fff;border-radius:22px;padding:52px 44px;margin-bottom:30px;overflow:hidden}
-.hero:after{content:'';position:absolute;inset:0;background:radial-gradient(600px 300px at 85% 20%,rgba(201,163,92,.28),transparent 65%),radial-gradient(400px 260px at 8% 95%,rgba(201,163,92,.14),transparent 60%);pointer-events:none}
-.hero h1{color:#fff;font-size:clamp(1.7rem,4.2vw,2.7rem);max-width:720px;position:relative;z-index:1}
-.hero h1 em{font-style:normal;color:var(--vang2)}
-.hero p{color:#d9e6de;max-width:660px;margin-top:12px;position:relative;z-index:1;font-size:1.05rem}
-.hero .hoTro{color:var(--vang2);font-weight:600;font-size:.98rem;margin-top:8px}
-.hero .call{display:inline-block;margin-top:20px;position:relative;z-index:1;font-size:1.05rem;padding:12px 24px}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 4px;position:relative;z-index:1}
-.chips a{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#f0f5f1;text-decoration:none;padding:6px 14px;border-radius:999px;font-size:.9rem;backdrop-filter:blur(4px)}
-.chips a:hover{background:rgba(201,163,92,.3);border-color:var(--vang)}
-.chips.dark a{background:#fff;border:1px solid var(--vien);color:#3a4c44}
+h1{font-size:2.1rem;line-height:1.22;margin:8px 0 14px;color:var(--chu)}
+h2{font-size:1.55rem;margin:34px 0 14px;color:var(--chu)}
+.lead{font-size:1.03rem;color:#5f5a4c;margin-bottom:14px}.dim{color:#a09777;font-size:.9rem}
+.crumb{font-size:.88rem;color:#a09777;margin-bottom:6px}.crumb a{text-decoration:none}
+.hero{position:relative;background:var(--chinh);color:#f1ead9;margin:0 calc(50% - 50vw) 26px;padding:52px max(20px,calc(50vw - 540px)) 50px}
+.hero h1{color:#f1ead9;font-size:clamp(1.7rem,3.8vw,3rem);max-width:720px;line-height:1.14;margin:0}
+.heroLabel{font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;color:var(--vang);font-weight:600;margin-bottom:16px}
+.hero p{color:#c9c0aa;max-width:560px;margin-top:16px;font-size:1.03rem;line-height:1.7}
+.heroCount{font-size:.85rem;color:#ab9088;margin-top:16px}
+.heroWrap{position:relative;flex:none}
+.heroCard{position:absolute;left:-14px;bottom:22px;background:var(--nen);color:var(--chu);padding:14px 20px;border-left:3px solid var(--vang);box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.heroCard b{display:block;font-size:.97rem}.heroCard span{font-size:.82rem;color:#5f5a4c}
+.hero .btn.zalo{border:1px solid #c9c0aa;color:#f1ead9;background:transparent}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 4px}
+.chips a{background:#fff;border:1px solid #ddd3bd;color:#3f3b30;text-decoration:none;padding:7px 15px;font-size:.88rem;font-weight:500}
+.chips a:hover{border-color:var(--vang);color:var(--chinh)}
+.chips.dark a{background:#fff;border:1px solid #ddd3bd;color:#3f3b30}
 .chips.dark a:hover{border-color:var(--vang);color:var(--chinh)}
-.statrow{display:flex;gap:14px;flex-wrap:wrap;margin:20px 0}
-.stat{background:#fff;border:1px solid var(--vien);border-radius:16px;padding:14px 22px;min-width:150px;box-shadow:0 2px 8px rgba(11,61,46,.04)}
-.stat b{display:block;font-size:1.45rem;color:var(--chinh);font-family:'Playfair Display',serif}
+.statrow{display:flex;gap:28px;flex-wrap:wrap;margin:14px 0;font-size:.9rem;color:#7d7663}
+.stat{background:none;border:0;border-radius:0;padding:2px 0;min-width:0;box-shadow:none}
+.stat b{display:inline;font-size:1.1rem;color:var(--chinh);font-family:'Lora',serif;margin-right:5px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:20px;margin:16px 0}
-.card{background:#fff;border:1px solid var(--vien);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:.18s;box-shadow:0 2px 8px rgba(11,61,46,.05)}
-.card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(11,61,46,.14);border-color:#d8cfae}
+.card{background:#fff;border:1px solid var(--vien);border-radius:0;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:.18s}
+.card:hover{transform:translateY(-2px);border-color:var(--vang);box-shadow:0 10px 26px rgba(58,18,16,.1)}
 .thumb{position:relative;overflow:hidden;aspect-ratio:16/10;background:#ece3df}
 .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
 .card:hover .thumb img{transform:scale(1.05)}
-.badge{position:absolute;left:10px;bottom:10px;background:#5c1a2b;color:#fff;font-weight:800;padding:5px 14px;border-radius:999px;font-size:.98rem;border:1.5px solid rgba(201,163,92,.9);box-shadow:0 2px 6px rgba(0,0,0,.45),0 4px 14px rgba(60,15,25,.5)}
-.badge b{color:var(--vang2)}
-.vt{position:absolute;right:10px;top:10px;background:rgba(92,26,43,.94);color:#fff;font-size:.78rem;font-weight:700;padding:3px 11px;border-radius:999px;box-shadow:0 2px 8px rgba(60,15,25,.3);backdrop-filter:blur(3px)}
-.ci{padding:14px 16px 15px}.ci h3{font-size:1.02rem;line-height:1.4;font-family:'Be Vietnam Pro',sans-serif;font-weight:600}
-.gia{color:var(--chinh);font-weight:800;font-size:1.12rem;margin:4px 0 2px}
-.tsm{font-size:.92rem;color:#5a4a4e;margin-top:4px}.tsm b{color:var(--chinh)}
+.ci{padding:15px 17px 16px}.ci h3{font-size:.98rem;line-height:1.4;font-family:'Be Vietnam Pro',sans-serif;font-weight:600;margin-top:5px}
+.cirow{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ctag{font-size:.72rem;font-weight:600;color:var(--chinh2);text-transform:uppercase;letter-spacing:.08em}
+.cgia{font-family:'Lora',serif;font-weight:700;font-size:1.12rem;color:var(--chinh);white-space:nowrap}
+.gia{color:var(--chinh);font-weight:700;font-size:1.12rem;margin:4px 0 2px;font-family:'Lora',serif}
+.tsm{font-size:.87rem;color:#7d7663;margin-top:4px}.tsm b{color:var(--chu)}
 .gal{margin:16px 0}
 .gview{position:relative;border-radius:14px;overflow:hidden;background:#14211b}
 .gview img{width:100%;height:min(60vw,480px);object-fit:cover;display:block}
@@ -504,8 +512,8 @@ h2:before{content:'';position:absolute;left:0;top:.25em;bottom:.25em;width:4px;b
 /* Phân trang khu vực (15/07) — nút to đủ bấm bằng ngón cái trên mobile (44px), tự xuống dòng khi nhiều trang */
 .pager{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;margin:22px 0 8px}
 .pager a,.pager .pcur{min-width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0 12px;border-radius:10px;font-weight:600;font-size:.95rem;text-decoration:none}
-.pager a{color:var(--chinh2);border:1px solid #d8dee6;background:#fff}
-.pager a:hover{border-color:var(--chinh2);background:#f4f8fc}
+.pager a{color:var(--chinh2);border:1px solid var(--vien);background:#fff}
+.pager a:hover{border-color:var(--vang);background:#fbf8f1}
 .pager .pcur{background:var(--chinh2);color:#fff}
 .pager .pnav{font-weight:700}
 .pager .pgap{padding:0 2px;color:#98a2b3}
@@ -518,52 +526,61 @@ h2:before{content:'';position:absolute;left:0;top:.25em;bottom:.25em;width:4px;b
 .fsl input::-moz-range-thumb{pointer-events:auto;width:16px;height:16px;border-radius:50%;background:var(--chinh2);border:2px solid #fff;cursor:pointer}
 .fkq{color:var(--chinh);font-weight:700}
 .xmtag{position:absolute;right:10px;bottom:10px;background:#8a2a3c;color:#fff;font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:999px}
-.xmnote{background:#eaf5ef;color:#5c1a2b;border:1px solid #bcd9c9;border-radius:9px;padding:8px 12px;font-size:.9rem;font-weight:600}
+.xmnote{background:rgba(217,179,106,.14);color:var(--vang);border:1px solid rgba(217,179,106,.4);border-radius:0;padding:8px 12px;font-size:.9rem;font-weight:600}
 .dbody{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:30px;align-items:start}
 .dbody>article,.dbody>aside{min-width:0;max-width:100%}
 .gal,.gview,.gthumbs{max-width:100%}
 article{min-width:0}
-.aside{position:sticky;top:76px;background:#fff;border:1px solid var(--vien);border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(11,61,46,.07)}
-.aside .gia{font-size:1.75rem;font-weight:900;letter-spacing:-.5px}
-.aside .call{display:block;text-align:center;margin:14px 0 10px;font-size:1.05rem}
-.aside p{font-size:.92rem;color:#6b5a5e;margin:6px 0}
+.aside{position:sticky;top:76px;background:var(--chinh);color:#f1ead9;border:0;border-radius:0;padding:24px}
+.aside .gia{font-size:1.85rem;font-weight:700;letter-spacing:-.5px;color:var(--vang)}
+.aside p{font-size:.92rem;color:#c9c0aa;margin:6px 0}
+.aside strong{color:#f1ead9}
+.aside .who{border-bottom:1px solid rgba(241,234,217,.18)}
+.aside .btn.zalo{border-color:#c9c0aa;color:#f1ead9}
+.aside .anote{font-size:.8rem;color:#ab9088;line-height:1.6}
 .specs{border-collapse:collapse;width:100%;background:#fff;border:1px solid var(--vien);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(11,61,46,.04)}
 .specs th,.specs td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--vien);vertical-align:top}
 .specs tr:last-child th,.specs tr:last-child td{border-bottom:0}
 .specs th{width:36%;color:#6b5a5e;font-weight:600;background:#f5f3ec}
-.qa{background:#fff;border:1px solid var(--vien);border-radius:12px;margin:10px 0;box-shadow:0 2px 6px rgba(11,61,46,.04)}
-.qa summary{cursor:pointer;font-weight:650;padding:14px 18px;list-style:none;position:relative;padding-right:38px}
-.qa summary:after{content:'+';position:absolute;right:16px;top:50%;transform:translateY(-52%);font-size:1.3rem;color:var(--vang);font-weight:400}
-.qa[open] summary:after{content:'−'}
-.qa p{padding:0 18px 16px;color:#5a4a4e}
-.cta{background:linear-gradient(135deg,#fdf7e9,#faf0d8);border:1px solid #ead9ae;border-radius:16px;padding:18px 22px;margin:26px 0}
-footer{background:#3a1019;color:#e4cdd3;margin-top:36px}footer .wrap{padding:30px 20px}
-footer a{color:var(--vang2)}footer p{margin:5px 0}footer strong{color:#fff}
+.qa{background:#fff;border:1px solid var(--vien);margin:10px 0;padding:16px 20px}
+.qa h3{font-size:.95rem;font-weight:700;margin:0 0 7px;line-height:1.45;font-family:'Be Vietnam Pro',sans-serif;color:var(--chu)}
+.qa p{color:#5f5a4c;font-size:.92rem;line-height:1.65;margin:0}
+.cta{background:#fff;border:1px solid var(--vien);border-left:3px solid var(--vang);padding:18px 22px;margin:26px 0}
+.tldr{background:#fff;border-left:3px solid var(--vang);padding:16px 22px;margin:14px 0 20px;font-size:.98rem;line-height:1.7;color:#3f3b30}
+.abox{background:var(--chinh);color:#f1ead9;padding:20px 24px;margin:26px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.abox img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--vang);flex:none}
+.abox p{margin:0;font-size:.92rem;color:#c9c0aa;line-height:1.6}.abox b{color:#f1ead9}
+.aeo{background:#fff;border-left:3px solid var(--vang);padding:18px 24px;font-size:.98rem;line-height:1.75;color:#3f3b30;max-width:880px;margin:6px 0 14px}
+.aeo b{color:var(--chinh)}
+.lhform{display:flex;flex-direction:column;gap:12px;max-width:520px;background:#fff;border:1px solid var(--vien);padding:22px 24px}
+.lhform input,.lhform textarea{padding:12px 14px;border:1px solid var(--vien);border-radius:8px;font:inherit;background:var(--nen);color:var(--chu)}
+.lhform input:focus,.lhform textarea:focus{outline:2px solid var(--vang)}
+.lhform button{cursor:pointer;border:0;font:inherit}
+footer{background:var(--chinh);color:#c9c0aa;margin-top:36px}footer .wrap{padding:30px 20px}
+footer a{color:var(--vang)}footer p{margin:5px 0}footer strong{color:#f1ead9}
 article p{margin:10px 0}table{font-size:.97rem}
 .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;position:relative;z-index:1}
-.btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:999px;transition:.15s}
-.btn.gold{background:linear-gradient(135deg,var(--vang),#b8904a);color:#211804;box-shadow:0 3px 12px rgba(184,144,74,.4)}
-.btn.zalo{background:#0068ff;color:#fff;box-shadow:0 3px 12px rgba(0,104,255,.32)}
-.btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;text-decoration:none;padding:14px 24px;border-radius:8px;transition:.15s;white-space:nowrap}
+.btn.gold{background:var(--vang);color:var(--chinh)}
+.btn.zalo{border:1px solid var(--chinh);color:var(--chinh);background:transparent;font-weight:600}
+.btn:hover{opacity:.88}
 .aside .btn{width:100%;justify-content:center;margin:5px 0;padding:12px 10px}
 .hero-flex{display:flex;gap:36px;align-items:center;justify-content:space-between;position:relative;z-index:1}
 .ava{border-radius:50%;object-fit:cover;object-position:50% 18%;border:4px solid var(--vang);box-shadow:0 10px 34px rgba(0,0,0,.35);background:#ece3df}
 .ava.big{width:215px;height:215px;flex:none;animation:float 5.5s ease-in-out infinite}
 .ava.sm{width:70px;height:70px;border-width:3px;flex:none}
 .hero-flex>picture{flex:none;display:block;line-height:0}
-.heroPic{width:235px;aspect-ratio:4/5;flex:none;object-fit:cover;border-radius:22px;border:4px solid var(--vang);box-shadow:0 16px 44px rgba(0,0,0,.4);animation:float 5.5s ease-in-out infinite;position:relative;z-index:1}
-.logo{display:inline-flex;align-items:center;gap:9px}.logo img{border-radius:50%;box-shadow:0 0 0 2px rgba(201,163,92,.5)}
+.heroPic{width:340px;max-width:38vw;height:400px;flex:none;object-fit:cover;border-radius:6px;border:1px solid rgba(217,179,106,.4);display:block}
+.logo{display:inline-flex;align-items:center;gap:9px}.logo img{border-radius:50%}
 .socials a{margin-right:2px}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .who{display:flex;gap:13px;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px dashed var(--vien)}
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .55s ease,transform .55s ease}
 .reveal.in{opacity:1;transform:none}
-.fab{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:12px;z-index:50}
-.fab a{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.28)}
-.fab .fz{background:#0068ff;color:#fff;font-size:.8rem;letter-spacing:.3px}
-.fab .fc{background:linear-gradient(135deg,var(--vang),#b8904a);color:#211804;font-size:1.35rem;position:relative}
-.fab .fc:before{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--vang);animation:pulse 1.9s ease-out infinite}
-@keyframes pulse{0%{transform:scale(.85);opacity:.9}70%{transform:scale(1.3);opacity:0}100%{opacity:0}}
+/* thanh Goi/Zalo co dinh day mobile (design 3a) — desktop an */
+.mbar{display:none;grid-template-columns:1fr 1fr;gap:10px;position:fixed;left:0;right:0;bottom:0;padding:12px 16px;background:var(--nen);border-top:1px solid var(--vien);box-shadow:0 -4px 16px rgba(58,18,16,.12);z-index:60}
+.mbar a{font-weight:700;font-size:.95rem;padding:14px;border-radius:8px;text-align:center;text-decoration:none}
+.mbar .mgoi{background:var(--vang);color:var(--chinh)}.mbar .mzalo{background:var(--chinh);color:#f1ead9}
 @media(max-width:860px){.dbody{grid-template-columns:1fr}.aside{position:static}}
 @media(max-width:760px){.hero-flex{flex-direction:column-reverse;align-items:stretch}.hero-flex>div{width:100%;min-width:0;max-width:100%}.hero h1,.hero p{max-width:100%}.ava.big{width:150px;height:150px}.hero-flex>picture{width:100%;text-align:center}.heroPic{width:180px;margin:0 auto}}
 @media(max-width:640px){
@@ -578,14 +595,18 @@ main{padding:18px 13px 40px}
 .top nav a{white-space:nowrap;font-size:.88rem;padding:6px 9px}
 h1{font-size:1.42rem}h2{font-size:1.18rem;margin:26px 0 10px}
 .lead{font-size:.98rem}
-.hero{padding:24px 16px 26px;border-radius:15px;margin-bottom:20px}
-.hero h1{font-size:1.5rem}.hero p{font-size:.95rem}
+.hero{margin:0 -13px 20px;padding:28px 16px 30px}
+.hero h1{font-size:1.55rem}.hero p{font-size:.92rem}
+.heroPic{width:100%;max-width:100%;height:300px}
+.heroCard{left:10px;bottom:14px}
+body{padding-bottom:74px}
+.mbar{display:grid}
 .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin:14px -16px 2px;padding-left:16px;padding-right:16px}
 .chips::-webkit-scrollbar{display:none}
 .chips a{white-space:nowrap;font-size:.85rem}
 .btns{flex-direction:column;width:100%}.btns .btn{justify-content:center;width:100%}
-.statrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat{min-width:0;padding:11px 14px}.stat b{font-size:1.15rem}
+.statrow{gap:10px 22px}
+.stat b{font-size:1rem}
 .grid{grid-template-columns:1fr;gap:14px}
 .thumb{aspect-ratio:16/9}
 .fbar{position:static;padding:10px 12px;gap:8px}
@@ -596,10 +617,9 @@ h1{font-size:1.42rem}h2{font-size:1.18rem;margin:26px 0 10px}
 .gthumbs img{width:78px;height:56px}
 .specs{table-layout:fixed}.specs th{width:40%}.specs td,.specs th{overflow-wrap:break-word;word-break:break-word}
 .gallery img{height:150px}
-.fab{right:12px;bottom:12px}.fab a{width:50px;height:50px}
 footer{font-size:.92rem}
 }
-@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.ava.big,.fab .fc:before{animation:none}}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.ava.big{animation:none}}
 `);
 // ảnh tĩnh (avatar...) -> dist/anh/
 if (existsSync(join(ROOT, 'assets'))) cpSync(join(ROOT, 'assets'), join(DIST, 'anh'), { recursive: true });
@@ -614,20 +634,23 @@ const st = statsOf(ACT);
 // TRANG CHỦ
 {
   const newest = ACT.slice(0, 6);
-  const ld = [faqLd(FAQ.slice(0, 4)), { '@type': 'ItemList', name: 'Nhà mới cập nhật', itemListElement: newest.map((l, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE}/nha-dat/${l.url}.html`, name: tieuDe(l) })) }];
+  // RealEstateAgent (@id #agent — bài cẩm nang đã trỏ author về đây) — spec SEO-HANDOFF 19/07
+  const agentLd = { '@type': 'RealEstateAgent', '@id': `${SITE}/#agent`, name: BRAND.name, url: SITE + '/',
+    logo: SITE + '/anh/logo-64.png', image: SITE + '/anh/tuan.jpg', telephone: '+84777088622',
+    areaServed: AREAS.map(a => a.quan + ', TP.HCM'), knowsAbout: 'Mua bán nhà phố, biệt thự khu trung tâm TP.HCM',
+    sameAs: SOCIAL.filter(x => x.url).map(x => x.url) };
+  const ld = [agentLd, faqLd(FAQ.slice(0, 4)), { '@type': 'ItemList', name: 'Nhà mới cập nhật', itemListElement: newest.map((l, i) => ({ '@type': 'ListItem', position: i + 1, url: `${SITE}/nha-dat/${l.url}.html`, name: tieuDe(l) })) }];
+  // (19/07 handoff 1c) Hero đỏ nâu full-bleed: label uppercase + H1 Lora + 2 CTA + 1 DÒNG số liệu (ẩn 2 ô
+  // "0–3.000 tỷ"/"~17 tỷ" theo spec) + ảnh Tuấn chữ nhật kèm THẺ TÊN đè góc (E-E-A-T). Chips khu vực dời xuống dưới hero.
   const body = `
 <div class="hero"><div class="hero-flex"><div>
-<h1>Nhà phố – biệt thự <em>khu trung tâm</em> TP.HCM</h1>
-<p>Hơn 5 năm đồng hành cùng người mua nhà phố Sài Gòn. Không ồn ào — không phô trương, chỉ giá trị thật.</p>
-<p class="hoTro">❤️ Hỗ trợ dịch vụ vay thế chấp, đo vẽ cấp đổi sổ, thừa kế, hoàn công...</p>
+<div class="heroLabel">Môi giới trực tiếp · TP.HCM</div>
+<h1>Nhà phố – biệt thự khu trung tâm TP.HCM</h1>
+<p>Hơn 5 năm đồng hành cùng người mua nhà phố Sài Gòn. Không ồn ào — không phô trương, chỉ giá trị thật. Hỗ trợ vay thế chấp, đo vẽ cấp đổi sổ, thừa kế, hoàn công…</p>
+<div class="btns"><a class="btn gold" href="tel:${BRAND.phone}">📞 Gọi Tuấn ngay · ${PHONE_FMT}</a><a class="btn zalo" href="${ZALO}" target="_blank" rel="noopener">Nhắn Zalo tư vấn</a></div>
+<div class="heroCount">${st.n} căn đang bán · cập nhật ${today}</div>
+</div>${AVA ? `<div class="heroWrap"><picture>${AVAW ? `<source srcset="${AVAW}" type="image/webp">` : ''}<img class="heroPic" src="${AVA}" alt="Tuấn — Tuấn Sài Gòn, môi giới nhà phố, biệt thự trung tâm TP.HCM" width="340" height="400" fetchpriority="high"></picture><div class="heroCard"><b>Tuấn Sài Gòn</b><span>Hơn 5 năm · khu trung tâm · ${PHONE_FMT}</span></div></div>` : ''}</div></div>
 <div class="chips">${areasLive.filter(a => a.rows.length).map(a => `<a href="/khu-vuc/${a.slug}.html">${esc(a.quan)}</a>`).join('')}</div>
-<div class="btns"><a class="btn gold" href="tel:${BRAND.phone}">📞 Gọi Tuấn ngay · ${PHONE_FMT}</a><a class="btn zalo" href="${ZALO}" target="_blank" rel="noopener">💬 Nhắn Zalo tư vấn</a></div>
-</div>${AVA ? `<picture>${AVAW ? `<source srcset="${AVAW}" type="image/webp">` : ''}<img class="heroPic" src="${AVA}" alt="Tuấn — Tuấn Sài Gòn, môi giới nhà phố, biệt thự trung tâm TP.HCM" width="235" height="294" fetchpriority="high"></picture>` : ''}</div></div>
-<div class="statrow">
-<div class="stat"><b>${st.n} căn</b>đang chào bán</div>
-<div class="stat"><b>${num(st.min, 0)}–${num(st.max, 0)} tỷ</b>khoảng giá trong kho</div>
-<div class="stat"><b>~${num(st.medGia, 0)} tỷ</b>giá phổ biến</div>
-<div class="stat"><b>${today}</b>cập nhật</div></div>
 <h2>Nhà mới cập nhật</h2>
 <div class="grid">${newest.map(card).join('')}</div>
 <p><a href="/nha-dat/">Xem tất cả ${st.n} căn đang bán →</a></p>
@@ -784,14 +807,21 @@ ${cur < tong ? `<a class="pnav" href="${trangUrl(slug, cur + 1)}" rel="next">Sau
 <h1>Mua bán nhà ${esc(a.ten)} — TP.HCM</h1>
 ${has ? fbarBlock(areasLive, a.slug) : ''}
 <div id="fstatic">
-${a.intro.map(p => `<p class="lead">${esc(p)}</p>`).join('\n')}
-${has ? `<h2>Mặt bằng giá thực tế (từ kho tin đang bán)</h2>
+${has ? (() => {
+  // (19/07 handoff 2c) ĐOẠN AEO đầu trang: câu khẳng định có SỐ + MỐC THỜI GIAN từ kho thật — AI (Gemini/ChatGPT/
+  // Perplexity/AI Overviews) ưu tiên trích dạng này. Số tự tính từ rows, KHÔNG bịa.
+  const qv = (arr, pct) => { if (!arr.length) return 0; const v = arr.map(x => x.gia_ty).sort((x, y) => x - y); return v[Math.min(v.length - 1, Math.floor(v.length * pct))]; };
+  const hemR = a.rows.filter(x => x.vitri !== 'Mặt tiền' && x.gia_ty), mtR = a.rows.filter(x => x.vitri === 'Mặt tiền' && x.gia_ty);
+  const medHem = qv(hemR, .5), mt25 = qv(mtR, .25), mt75 = qv(mtR, .75);
+  const [dNay, mNay, yNay] = String(today).split('/');
+  return `<div class="aeo">Giá nhà ${esc(a.quan)} tháng ${mNay}/${yNay} phổ biến quanh <b>${num(medHem || s.medGia, 0)} tỷ</b> với nhà hẻm${mtR.length > 3 && mt75 > mt25 ? ` và <b>${num(mt25, 0)}–${num(mt75, 0)} tỷ</b> với nhà mặt tiền` : ''}, dựa trên <b>${s.n} tin</b> đang bán trong kho ${BRAND.name}, đơn giá đất phổ biến ~${num(s.medPpm, 0)} triệu/m². Đây là giá chào của tin thật — còn thương lượng, cập nhật ${today}.</div>
 <div class="statrow">
-<div class="stat"><b>${s.n} căn</b>đang chào bán</div>
-<div class="stat"><b>${num(s.min, 0)}–${num(s.max, 0)} tỷ</b>khoảng giá</div>
-<div class="stat"><b>~${num(s.medGia, 0)} tỷ</b>giá phổ biến</div>
-<div class="stat"><b>~${num(s.medPpm, 0)} tr/m²</b>đơn giá đất phổ biến</div></div>
-<p class="dim">Tính từ ${s.n} tin thật đang bán trong kho, cập nhật ${today}. Giá chào — còn thương lượng.</p>` : `<p>Khu này Tuấn đang tuyển tin — gọi <a href="tel:${BRAND.phone}">${BRAND.phone}</a> nói nhu cầu, có căn phù hợp Tuấn báo liền.</p>`}
+<div class="stat"><b>${s.n} căn</b> đang bán</div>
+<div class="stat"><b>~${num(medHem || s.medGia, 0)} tỷ</b> giá phổ biến nhà hẻm</div>
+<div class="stat"><b>${today}</b> cập nhật</div></div>`;
+})() : ''}
+${a.intro.map(p => `<p class="lead">${esc(p)}</p>`).join('\n')}
+${has ? '' : `<p>Khu này Tuấn đang tuyển tin — gọi <a href="tel:${BRAND.phone}">${BRAND.phone}</a> nói nhu cầu, có căn phù hợp Tuấn báo liền.</p>`}
 ${qa.length ? `<h2>Hỏi đáp về nhà đất ${esc(a.quan)}</h2>\n${faqHtml(qa)}` : ''}
 ${has ? (() => {
   const hxh = a.rows.filter(x => x.vitri === 'Hẻm xe hơi');
@@ -849,6 +879,38 @@ ${pagerHtml(a.slug, t, soTrang)}
 <p class="lead">Những câu khách hỏi Tuấn nhiều nhất khi mua bán nhà phố khu trung tâm TP.HCM: thuật ngữ, pháp lý, thanh toán an toàn và mặt bằng giá. Câu trả lời dựa trên kinh nghiệm giao dịch thực tế — quy định có thể thay đổi theo thời điểm, khi giao dịch nên xác nhận lại.</p>
 ${faqHtml(FAQ)}
 <div class="cta"><p>Câu hỏi của anh chị chưa có ở đây? Gọi/Zalo <a href="tel:${BRAND.phone}">${BRAND.phone}</a> (Tuấn) — hỏi gì đáp nấy, không mất phí tư vấn.</p></div>`;
+  // ---- /lien-he.html (19/07 handoff 7a/7b): 2 CTA lớn + 4 thẻ thông tin + form 3 trường -> GAS action=lienhe
+  // (GET chứ KHÔNG POST — bẫy kinh điển: POST vào GAS bị Google trả cache, code không chạy) -> Telegram Tuấn.
+  {
+    const lhBody = `<nav class="crumb"><a href="/">Trang chủ</a> › Liên hệ</nav>
+<h1>Gọi Tuấn — nghe máy cả cuối tuần</h1>
+<p class="lead">Anh chị cần mua, bán hay định giá nhà khu trung tâm TP.HCM — gọi trực tiếp ${PHONE_FMT}, Tuấn nghe máy hoặc gọi lại trong ngày.</p>
+<div class="btns"><a class="btn gold" href="tel:${BRAND.phone}">📞 Gọi Tuấn ngay · ${PHONE_FMT}</a><a class="btn zalo" href="${ZALO}" target="_blank" rel="noopener">Nhắn Zalo tư vấn</a></div>
+<div class="grid" style="margin-top:26px">
+<div class="card"><div class="ci"><h3>Giờ làm việc</h3><p class="tsm">8h–21h hằng ngày, kể cả cuối tuần. Ngoài giờ anh chị cứ nhắn Zalo — Tuấn phản hồi sớm nhất có thể.</p></div></div>
+<div class="card"><div class="ci"><h3>Khu vực phục vụ</h3><p class="tsm">${esc(BRAND.areasText)}.</p></div></div>
+<div class="card"><div class="ci"><h3>Mạng xã hội</h3><p class="tsm">${SOCIAL.filter(x => x.url).map(x => `<a href="${x.url}" target="_blank" rel="noopener">${x.ten}</a>`).join(' · ')}</p></div></div>
+<div class="card"><div class="ci"><h3>Ký gửi nhà bán</h3><p class="tsm">Anh chị có nhà khu trung tâm cần bán — gọi ${PHONE_FMT}, Tuấn khảo sát, định giá miễn phí và KHÔNG đăng số nhà lên mạng.</p></div></div>
+</div>
+<h2>Để lại thông tin — Tuấn gọi lại</h2>
+<form id="lhf" class="lhform" autocomplete="on">
+<input name="ten" placeholder="Tên anh chị" required maxlength="60">
+<input name="sdt" placeholder="Số điện thoại / Zalo" required maxlength="15" inputmode="tel" pattern="[0-9+. ()-]{8,15}">
+<input name="hp" style="display:none" tabindex="-1" autocomplete="off">
+<textarea name="nd" placeholder="Nhu cầu (vd: cần nhà hẻm Phú Nhuận tầm 6 tỷ)" rows="3" maxlength="300"></textarea>
+<button class="btn gold" type="submit">Gửi cho Tuấn</button>
+<p class="dim">Thông tin chỉ dùng để Tuấn liên hệ lại — không chia sẻ cho bên nào khác.</p>
+<p class="fkq" id="lhkq" hidden>✅ Đã gửi! Tuấn sẽ gọi lại cho anh chị sớm nhất.</p>
+</form>
+<script>
+(function(){var f=document.getElementById('lhf'),kq=document.getElementById('lhkq');if(!f)return;
+f.addEventListener('submit',function(e){e.preventDefault();
+var q='action=lienhe&ten='+encodeURIComponent(f.ten.value)+'&sdt='+encodeURIComponent(f.sdt.value)+'&nd='+encodeURIComponent(f.nd.value)+'&hp='+encodeURIComponent(f.hp.value);
+fetch('${GAS}?'+q).catch(function(){});
+kq.hidden=false;f.querySelector('button').disabled=true;});})();
+</script>`;
+    W('lien-he.html', page({ path: '/lien-he.html', title: `Liên hệ Tuấn Sài Gòn — mua bán, ký gửi nhà trung tâm TP.HCM | ${BRAND.name}`, desc: `Gọi/Zalo ${PHONE_FMT} — Tuấn nghe máy 8h–21h cả cuối tuần. Mua, bán, định giá, ký gửi nhà phố – biệt thự Quận 1, Quận 3, Phú Nhuận, Bình Thạnh... Khảo sát định giá miễn phí, cập nhật ${today}.`, ld: [crumbLd([['Trang chủ', '/'], ['Liên hệ', '/lien-he.html']])], body: lhBody, upDate: today }));
+  }
   W('hoi-dap.html', page({ path: '/hoi-dap.html', title: `Hỏi đáp mua nhà TP.HCM: tránh mua hớ, cọc an toàn, quy hoạch, nhà thế chấp | ${BRAND.name}`, desc: 'Giải đáp ' + FAQ.length + ' nỗi lo thật khi mua bán nhà phố TP.HCM: làm sao khỏi mua hớ, kiểm tra quy hoạch trước khi cọc, đặt cọc không bị bẻ kèo, sổ chung – vi bằng, nhà thế chấp, vay ngân hàng, ký quỹ, miễn thuế nhà duy nhất.', ld: [faqLd(FAQ), crumbLd([['Trang chủ', '/'], ['Hỏi đáp', '/hoi-dap.html']])], body, upDate: today }));
 }
 
@@ -952,8 +1014,9 @@ if (BAI.length) {
     const body = `<nav class="crumb"><a href="/">Trang chủ</a> › <a href="/cam-nang/">Cẩm nang</a> › ${esc(NHOM_TEN[b.nhom] || '')}</nav>
 <h1>${esc(b.title)}</h1>
 <p class="dim">${NHOM_TEN[b.nhom] || 'Cẩm nang'} · Tuấn Sài Gòn · cập nhật ${dV(b.pub)}</p>
+<div class="tldr"><b>Trả lời ngắn:</b> ${esc(b.mota)}</div>
 ${b.bai}
-<div class="cta"><p>Anh chị đang vướng đúng tình huống trong bài? Gọi/Zalo <a href="tel:${BRAND.phone}">${PHONE_FMT}</a> (Tuấn) — nghe kể tình huống cụ thể rồi mới tư vấn, không mất phí.</p></div>
+<div class="abox">${AVA ? `<img src="${AVA}" alt="Tuấn Sài Gòn" width="56" height="56">` : ''}<p><b>Tuấn Sài Gòn</b> — môi giới trực tiếp hơn 5 năm tại khu trung tâm TP.HCM (Quận 1, Quận 3, Phú Nhuận, Bình Thạnh…). Vướng đúng tình huống trong bài? Gọi/Zalo <a href="tel:${BRAND.phone}">${PHONE_FMT}</a> — nghe kể cụ thể rồi mới tư vấn, không mất phí.</p></div>
 ${cung.length ? `<h2>Đọc tiếp cùng chủ đề</h2><div class="grid">${cung.map(baiCard).join('')}</div>` : ''}
 <p>Xem thêm: <a href="/nha-dat/">nhà đang bán tại TP.HCM</a> · <a href="/khu-vuc/">mặt bằng giá từng khu vực</a></p>`;
     const ld = [{ '@type': 'Article', headline: b.title, description: b.mota, datePublished: b.pub, dateModified: b.pub,
@@ -972,7 +1035,7 @@ ${nhoms.map(n => `<h2>${NHOM_TEN[n] || n}</h2><div class="grid">${BAI.filter(b =
 
 // sitemap.xml
 {
-  const urls = [['/', data.ts], ['/nha-dat/', data.ts], ['/khu-vuc/', data.ts], ['/hoi-dap.html', data.ts], ['/gioi-thieu.html', data.ts],
+  const urls = [['/', data.ts], ['/nha-dat/', data.ts], ['/khu-vuc/', data.ts], ['/hoi-dap.html', data.ts], ['/gioi-thieu.html', data.ts], ['/lien-he.html', data.ts],
     ...AREAS.map(a => [`/khu-vuc/${a.slug}.html`, data.ts]),
     // trang 2+ của khu vực (15/07): PHẢI có trong sitemap — đây là đường Google bò tới mấy ngàn căn nằm sâu
     ...areasLive.flatMap(a => Array.from({ length: Math.max(0, (a.soTrang || 1) - 1) }, (_, i) => [`/khu-vuc/${a.slug}-trang-${i + 2}.html`, data.ts])),
