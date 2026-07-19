@@ -599,7 +599,7 @@ article p{margin:10px 0}table{font-size:.97rem}
 .mbar a{font-weight:700;font-size:.95rem;padding:14px;border-radius:8px;text-align:center;text-decoration:none}
 .mbar .mgoi{background:var(--vang);color:var(--chinh)}.mbar .mzalo{background:var(--chinh);color:#f1ead9}
 @media(max-width:860px){.dbody{grid-template-columns:1fr}.aside{position:static}}
-@media(max-width:760px){.hero-flex{flex-direction:column-reverse;align-items:stretch}.hero-flex>div{width:100%;min-width:0;max-width:100%}.hero h1,.hero p{max-width:100%}.ava.big{width:150px;height:150px}.hero-flex>picture{width:100%;text-align:center}.heroPic{width:180px;margin:0 auto}}
+@media(max-width:760px){.hero-flex{flex-direction:column;align-items:stretch}.hero-flex>div{width:100%;min-width:0;max-width:100%}.hero h1,.hero p{max-width:100%}.ava.big{width:150px;height:150px}.heroWrap{width:100%}.heroPic{width:100%;max-width:100%;height:320px;margin:0}}
 @media(max-width:640px){
 html,body{overflow-x:clip}
 main{padding:18px 13px 40px}
@@ -624,6 +624,8 @@ body{padding-bottom:74px}
 .btns{flex-direction:column;width:100%}.btns .btn{justify-content:center;width:100%}
 .statrow{gap:10px 22px}
 .stat b{font-size:1rem}
+.btn{white-space:normal;padding:13px 14px;font-size:.92rem;text-align:center}
+.gtBox{padding:18px 16px}
 .grid{grid-template-columns:1fr;gap:14px}
 .card{flex-direction:row;align-items:stretch}
 .thumb{width:120px;min-height:112px;aspect-ratio:auto;flex:none}
@@ -917,7 +919,7 @@ ${faqHtml(FAQ)}
 <div class="card"><div class="ci"><h3>Giờ làm việc</h3><p class="tsm">8h–21h hằng ngày, kể cả cuối tuần. Ngoài giờ anh chị cứ nhắn Zalo — Tuấn phản hồi sớm nhất có thể.</p></div></div>
 <div class="card"><div class="ci"><h3>Khu vực phục vụ</h3><p class="tsm">${esc(BRAND.areasText)}.</p></div></div>
 <div class="card"><div class="ci"><h3>Mạng xã hội</h3><p class="tsm">${SOCIAL.filter(x => x.url).map(x => `<a href="${x.url}" target="_blank" rel="noopener">${x.ten}</a>`).join(' · ')}</p></div></div>
-<div class="card"><div class="ci"><h3>Ký gửi nhà bán</h3><p class="tsm">Anh chị có nhà khu trung tâm cần bán — gọi ${PHONE_FMT}, Tuấn khảo sát, định giá miễn phí và KHÔNG đăng số nhà lên mạng.</p></div></div>
+<div class="card"><div class="ci"><h3>Ký gửi nhà bán</h3><p class="tsm">Anh chị có nhà khu trung tâm cần bán — gọi ${PHONE_FMT}, Tuấn khảo sát, định giá miễn phí; số nhà chỉ công khai khi anh chị đồng ý.</p></div></div>
 </div>
 <h2>Để lại thông tin — Tuấn gọi lại</h2>
 <form id="lhf" class="lhform" autocomplete="on">
@@ -963,7 +965,7 @@ ${ABOUT.map(p => `<p class="lead">${esc(p)}</p>`).join('\n')}
 <div><span class="so">03</span><b>Theo tới khi xong việc</b><p>Hỗ trợ vay thế chấp, đo vẽ cấp đổi sổ, thừa kế, hoàn công — theo anh chị tới tận phòng công chứng.</p></div>
 </div>
 <div class="chips">${areasLive.filter(a => a.rows.length).map(a => `<a href="/khu-vuc/${a.slug}.html">${esc(a.quan)}</a>`).join('')}</div>
-<div class="cta"><p><b>Vì sao Tuấn không đăng số nhà chính xác?</b> Để bảo vệ chủ nhà khỏi bị làm phiền và tránh tin bị bên khác sao chép. Anh chị gọi ${PHONE_FMT} đọc mã tin — Tuấn gửi vị trí chính xác và xếp lịch xem nhà ngay.</p></div>
+<div class="cta"><p><b>Vì sao phần lớn tin không đăng số nhà chính xác?</b> Để bảo vệ chủ nhà khỏi bị làm phiền và tránh tin bị bên khác sao chép. Riêng dòng căn giá trị lớn (trên 50 tỷ) đã công khai địa chỉ trên thị trường, Tuấn hiển thị đầy đủ để anh chị dễ thẩm định. Các căn còn lại — gọi ${PHONE_FMT} đọc mã tin, Tuấn gửi vị trí chính xác và xếp lịch xem nhà ngay.</p></div>
 </div>
 </div>
 <h2>Tuấn làm việc mỗi ngày</h2>

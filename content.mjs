@@ -166,7 +166,7 @@ export const FAQ = [
   },
   {
     q: 'Vì sao tin đăng không ghi số nhà chính xác và số điện thoại chủ nhà?',
-    a: 'Để bảo vệ sự riêng tư của chủ nhà và tránh làm phiền họ — đây là nguyên tắc làm nghề của Tuấn Sài Gòn. Tin đăng ghi tên đường, phường, quận và thông số đầy đủ; khi anh chị quan tâm thật, gọi 0777088622 để được cung cấp vị trí chính xác và sắp lịch xem nhà trực tiếp.',
+    a: 'Để bảo vệ sự riêng tư của chủ nhà và tránh làm phiền họ — đây là nguyên tắc làm nghề của Tuấn Sài Gòn. Tin đăng ghi tên đường, phường, quận và thông số đầy đủ; khi anh chị quan tâm thật, gọi 0777088622 để được cung cấp vị trí chính xác và sắp lịch xem nhà trực tiếp. Riêng dòng căn giá trị lớn (trên 50 tỷ) đã công khai địa chỉ trên thị trường thì trang hiển thị đầy đủ số nhà để tiện thẩm định.',
   },
   {
     q: 'Khu nào ở TP.HCM có cộng đồng người nước ngoài, cho thuê tốt?',
@@ -177,6 +177,6 @@ export const FAQ = [
 // Giới thiệu (E-E-A-T)
 export const ABOUT = [
   'Tuấn Sài Gòn là môi giới bất động sản tại TP.HCM, chuyên dòng nhà phố và biệt thự khu trung tâm: Quận 1, Quận 3, Quận 5, Quận 10, Phú Nhuận, Bình Thạnh, Gò Vấp, Tân Bình (tên quận cũ, trước sáp nhập 2025) và dòng cao cấp tại Thảo Điền, Phú Mỹ Hưng.',
-  'Cách làm việc: tin đăng trung thực đúng hiện trạng — không ghi số nhà công khai để bảo vệ chủ nhà, không tô vẽ điểm yếu thành điểm mạnh. Kho tin được cập nhật hằng ngày từ nguồn hàng trực tiếp, căn nào đã cọc sẽ được gỡ khỏi trang.',
+  'Cách làm việc: tin đăng trung thực đúng hiện trạng — phần lớn tin không ghi số nhà công khai để bảo vệ chủ nhà (riêng dòng căn trên 50 tỷ đã công khai trên thị trường thì hiển thị đầy đủ địa chỉ), không tô vẽ điểm yếu thành điểm mạnh. Kho tin được cập nhật hằng ngày từ nguồn hàng trực tiếp, căn nào đã cọc sẽ được gắn nhãn rõ.',
   'Anh chị cần tìm nhà theo ngân sách, cần định giá sơ bộ hay cần người đi xem nhà cùng — gọi 0777088622 (Tuấn), nói rõ nhu cầu, Tuấn lọc đúng căn phù hợp rồi mới hẹn đi xem, không dắt đi lòng vòng.',
 ];
