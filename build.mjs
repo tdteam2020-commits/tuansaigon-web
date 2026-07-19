@@ -625,7 +625,12 @@ body{padding-bottom:74px}
 .statrow{gap:10px 22px}
 .stat b{font-size:1rem}
 .btn{white-space:normal;padding:13px 14px;font-size:.92rem;text-align:center}
+/* (19/07 Tuan bat mobile gioi thieu tran ngang) 1fr co min=auto -> nut nowrap ep CA COT grid rong hon man hinh.
+   Siet: minmax(0,1fr) + min-width:0 moi tang de KHONG BAO GIO banh qua viewport. */
+.gt2{grid-template-columns:minmax(0,1fr)}
+.gt2>div,.gtL,.gtBox{min-width:0;max-width:100%}
 .gtBox{padding:18px 16px}
+.gtBox .btn{white-space:normal;width:100%}
 .grid{grid-template-columns:1fr;gap:14px}
 .card{flex-direction:row;align-items:stretch}
 .thumb{width:120px;min-height:112px;aspect-ratio:auto;flex:none}
