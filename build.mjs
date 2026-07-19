@@ -556,6 +556,23 @@ article{min-width:0}
 .lhform input,.lhform textarea{padding:12px 14px;border:1px solid var(--vien);border-radius:8px;font:inherit;background:var(--nen);color:var(--chu)}
 .lhform input:focus,.lhform textarea:focus{outline:2px solid var(--vang)}
 .lhform button{cursor:pointer;border:0;font:inherit}
+.featured{background:var(--chinh);color:#f1ead9;display:block;padding:28px 32px;margin:18px 0 24px;text-decoration:none}
+.featured .ctag{color:var(--vang)}
+.featured h2{color:#f1ead9;margin:10px 0 8px;font-size:1.5rem}
+.featured p{color:#c9c0aa;font-size:.95rem;max-width:760px;margin:0;line-height:1.65}
+.featured .fmore{color:var(--vang);font-weight:700;font-size:.9rem;display:inline-block;margin-top:12px}
+.gt2{display:grid;grid-template-columns:400px minmax(0,1fr);gap:40px;align-items:start;margin-top:10px}
+.gtL{position:sticky;top:80px;display:flex;flex-direction:column;gap:16px}
+.gtPic{width:100%;height:460px;object-fit:cover;border-radius:6px;border:1px solid rgba(217,179,106,.4);display:block}
+.gtBox{background:var(--chinh);color:#f1ead9;padding:22px 24px}
+.gtBox b{color:#f1ead9}.gtBox p{color:#c9c0aa;font-size:.9rem;margin:6px 0}
+.gtBox .btn{width:100%;justify-content:center;margin-top:8px}
+.gtBox .btn.zalo{border-color:#c9c0aa;color:#f1ead9}
+.cach{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:14px 0}
+.cach>div{background:#fff;border:1px solid var(--vien);padding:18px 20px}
+.cach .so{font-family:'Lora',serif;font-size:1.6rem;color:var(--vang);font-weight:700}
+.cach b{display:block;margin:6px 0;font-size:.98rem}
+.cach p{font-size:.88rem;color:#5f5a4c;margin:0;line-height:1.6}
 footer{background:var(--chinh);color:#c9c0aa;margin-top:36px}footer .wrap{padding:30px 20px}
 footer a{color:var(--vang)}footer p{margin:5px 0}footer strong{color:#f1ead9}
 article p{margin:10px 0}table{font-size:.97rem}
@@ -608,7 +625,17 @@ body{padding-bottom:74px}
 .statrow{gap:10px 22px}
 .stat b{font-size:1rem}
 .grid{grid-template-columns:1fr;gap:14px}
-.thumb{aspect-ratio:16/9}
+.card{flex-direction:row;align-items:stretch}
+.thumb{width:120px;min-height:112px;aspect-ratio:auto;flex:none}
+.thumb img{height:100%}
+.ci{padding:10px 12px;flex:1;min-width:0}
+.ci h3{font-size:.88rem;margin-top:3px}
+.cgia{font-size:.98rem}
+.tsm{font-size:.8rem}.ci .dim{font-size:.78rem}
+.gt2{grid-template-columns:1fr}
+.gtL{position:static}
+.gtPic{height:340px}
+.featured{padding:20px 18px}.featured h2{font-size:1.2rem}
 .fbar{position:static;padding:10px 12px;gap:8px}
 .fbar b{width:100%}
 .fbar select{flex:1 1 44%;min-width:0;padding:9px 8px;font-size:.9rem}
@@ -916,9 +943,29 @@ kq.hidden=false;f.querySelector('button').disabled=true;});})();
 
 // GIỚI THIỆU
 {
-  const body = `<h1>Về ${BRAND.name}</h1>
-${AVA ? `<p><picture>${AVAW ? `<source srcset="${AVAW}" type="image/webp">` : ''}<img class="ava big" src="${AVA}" alt="Tuấn — ${esc(BRAND.tagline)}" width="215" height="215" fetchpriority="high"></picture></p>` : ''}
+  // (19/07 handoff 4a) 2 cột: TRÁI ảnh lớn + hộp liên hệ sticky · PHẢI tagline H1 + giới thiệu + 3 thẻ
+  // "Cách Tuấn làm việc" (01/02/03 Lora vàng — nội dung từ copy sẵn có, không bịa) + ghi chú vì sao không đăng số nhà.
+  const body = `<div class="gt2">
+<div class="gtL">
+${AVA ? `<picture>${AVAW ? `<source srcset="${AVAW}" type="image/webp">` : ''}<img class="gtPic" src="${AVA}" alt="Tuấn — ${esc(BRAND.tagline)}" width="400" height="460" fetchpriority="high"></picture>` : ''}
+<div class="gtBox"><b>Tuấn Sài Gòn</b><p>Môi giới trực tiếp · hơn 5 năm khu trung tâm TP.HCM</p>
+<a class="btn gold" href="tel:${BRAND.phone}">📞 Gọi Tuấn · ${PHONE_FMT}</a>
+<a class="btn zalo" href="${ZALO}" target="_blank" rel="noopener">Nhắn Zalo tư vấn</a></div>
+</div>
+<div>
+<div class="heroLabel" style="color:var(--chinh2)">Về Tuấn Sài Gòn</div>
+<h1>Không ồn ào — không phô trương, chỉ giá trị thật</h1>
 ${ABOUT.map(p => `<p class="lead">${esc(p)}</p>`).join('\n')}
+<h2>Cách Tuấn làm việc</h2>
+<div class="cach">
+<div><span class="so">01</span><b>Nghe nhu cầu trước, lọc căn sau</b><p>Anh chị nói rõ tầm tiền và nhu cầu — Tuấn lọc đúng căn trong kho rồi mới hẹn xem, không dắt đi lòng vòng.</p></div>
+<div><span class="so">02</span><b>Tin thật, cập nhật hằng ngày</b><p>Giá và trạng thái từng căn đối chiếu kho tin mỗi ngày; căn đã có khách cọc gắn nhãn rõ ràng, không treo tin ảo.</p></div>
+<div><span class="so">03</span><b>Theo tới khi xong việc</b><p>Hỗ trợ vay thế chấp, đo vẽ cấp đổi sổ, thừa kế, hoàn công — theo anh chị tới tận phòng công chứng.</p></div>
+</div>
+<div class="chips">${areasLive.filter(a => a.rows.length).map(a => `<a href="/khu-vuc/${a.slug}.html">${esc(a.quan)}</a>`).join('')}</div>
+<div class="cta"><p><b>Vì sao Tuấn không đăng số nhà chính xác?</b> Để bảo vệ chủ nhà khỏi bị làm phiền và tránh tin bị bên khác sao chép. Anh chị gọi ${PHONE_FMT} đọc mã tin — Tuấn gửi vị trí chính xác và xếp lịch xem nhà ngay.</p></div>
+</div>
+</div>
 <h2>Tuấn làm việc mỗi ngày</h2>
 <div class="gtx">
 <figure><picture><source srcset="/anh/tuan-khach-1.webp" type="image/webp"><img src="/anh/tuan-khach-1.jpg" alt="Tuấn Sài Gòn cùng khách hàng chốt giao dịch nhà phố TP.HCM" loading="lazy" width="1100" height="990"></picture><figcaption>Cùng khách chốt giao dịch — tính toán rõ ràng từng khoản ngay trên bàn.</figcaption></figure>
@@ -1025,10 +1072,14 @@ ${cung.length ? `<h2>Đọc tiếp cùng chủ đề</h2><div class="grid">${cun
     W(`cam-nang/${b.slug}.html`, page({ path: `/cam-nang/${b.slug}.html`, title: `${b.title} | ${BRAND.name}`, desc: b.mota, ld, body, upDate: dV(b.pub) }));
   }
   const nhoms = [...new Set(BAI.map(b => b.nhom))];
+  // (19/07 handoff 5a) chip lọc chủ đề (neo tới từng nhóm) + BÀI NỔI BẬT nền đỏ nâu (bài mới nhất)
+  const noiBat = BAI.slice().sort((x, y) => new Date(y.pub) - new Date(x.pub))[0];
   const idxBody = `<h1>Cẩm nang mua bán nhà TP.HCM — ${BAI.length} bài từ kinh nghiệm giao dịch thật</h1>
 <p class="lead">Tuấn viết từ chính các tình huống gặp hằng ngày khi dẫn khách mua bán nhà lẻ khu trung tâm: pháp lý, đặt cọc, vay ngân hàng, thẩm định căn nhà, mặt bằng giá từng khu. Quy định có thể thay đổi theo thời điểm — khi giao dịch nên xác nhận lại.</p>
+<div class="chips">${nhoms.map(nh => `<a href="#${nh}">${NHOM_TEN[nh] || nh}</a>`).join('')}</div>
+${noiBat ? `<a class="featured" href="/cam-nang/${noiBat.slug}.html"><span class="ctag">Bài nổi bật · ${NHOM_TEN[noiBat.nhom] || 'Cẩm nang'}</span><h2>${esc(noiBat.title)}</h2><p>${esc(noiBat.mota)}</p><span class="fmore">Đọc bài →</span></a>` : ''}
 <div class="cta"><p><b>Cần đáp án nhanh?</b> Xem <a href="/hoi-dap.html">Hỏi đáp — ${FAQ.length} câu khách hỏi Tuấn nhiều nhất</a>: cọc an toàn, tránh mua hớ, kiểm tra quy hoạch, sổ chung – vi bằng…</p></div>
-${nhoms.map(n => `<h2>${NHOM_TEN[n] || n}</h2><div class="grid">${BAI.filter(b => b.nhom === n).map(baiCard).join('')}</div>`).join('\n')}`;
+${nhoms.map(nh => `<h2 id="${nh}">${NHOM_TEN[nh] || nh}</h2><div class="grid">${BAI.filter(b => b.nhom === nh).map(baiCard).join('')}</div>`).join('\n')}`;
   W('cam-nang/index.html', page({ path: '/cam-nang/', title: `Cẩm nang mua bán nhà TP.HCM: pháp lý, đặt cọc, vay vốn, định giá | ${BRAND.name}`, desc: `${BAI.length} bài kinh nghiệm thực tế khi mua bán nhà phố TP.HCM: tránh mất cọc, kiểm tra quy hoạch, vay ngân hàng, thẩm định nhà, mặt bằng giá từng quận — viết bởi môi giới trực tiếp ${BRAND.name}.`, ld: [crumbLd([['Trang chủ', '/'], ['Cẩm nang', '/cam-nang/']])], body: idxBody, upDate: today }));
   console.log(`· Cẩm nang: đăng ${BAI.length} bài`);
 }
