@@ -123,7 +123,7 @@ function statsOf(rows) {
 }
 
 // ---------- khung trang ----------
-const NAV = [['/', 'Trang chủ'], ['/nha-dat/', '🔍 Tìm kiếm'], ['/khu-vuc/', 'Khu vực'], ['/cam-nang/', 'Cẩm nang'], ['/gioi-thieu.html', 'Giới thiệu']];   // Hỏi đáp gộp vào Cẩm nang trên menu (13/07) — trang /hoi-dap.html vẫn sống
+const NAV = [['/', 'Trang chủ'], ['/nha-dat/', '🔍 Tìm kiếm'], ['/khu-vuc/', 'Khu vực'], ['/duong/', 'Theo đường'], ['/cam-nang/', 'Cẩm nang'], ['/gioi-thieu.html', 'Giới thiệu']];   // Hỏi đáp gộp vào Cẩm nang trên menu (13/07) — trang /hoi-dap.html vẫn sống · 'Theo đường' lên menu 27/07: link footer là tín hiệu YẾU, menu chính mới cho Google biết /duong/ là nhánh cấu trúc (mobile nav cuộn ngang nên thêm mục an toàn)
 const PHONE_FMT = '0777 088 622';
 const ZALO = `https://zalo.me/${BRAND.phone}`;
 const AVA = existsSync(join(ROOT, 'assets', 'tuan.jpg')) ? '/anh/tuan.jpg' : null; // ảnh đại diện Tuấn (website/assets/tuan.jpg)
