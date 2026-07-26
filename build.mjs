@@ -178,7 +178,7 @@ ${body}
 <p><strong>${BRAND.name}</strong> — ${BRAND.tagline}. Điện thoại/Zalo: <a href="tel:${BRAND.phone}">${BRAND.phone}</a>.</p>
 <p class="socials">${SOCIAL.filter(s => s.url).map(s => `<a href="${s.url}" target="_blank" rel="noopener">${s.ten}</a>`).join(' · ')}</p>
 <p>Khu vực phục vụ: ${esc(BRAND.areasText)} (tên quận cũ, quen dùng sau sáp nhập 2025).</p>
-<p><a href="/lien-he.html">Liên hệ & ký gửi nhà</a> · <a href="/hoi-dap.html">Hỏi đáp</a> · <a href="/gioi-thieu.html">Giới thiệu Tuấn</a> · <a href="/cam-nang/">Cẩm nang</a></p>
+<p><a href="/lien-he.html">Liên hệ & ký gửi nhà</a> · <a href="/hoi-dap.html">Hỏi đáp</a> · <a href="/gioi-thieu.html">Giới thiệu Tuấn</a> · <a href="/cam-nang/">Cẩm nang</a> · <a href="/duong/">Bán nhà theo tên đường</a></p>
 <p class="dim">Thông tin trên trang cập nhật ${esc(upDate)}. Giá chào bán có thể thay đổi theo thời điểm — gọi để xác nhận căn còn hay đã cọc.</p>
 </div></footer>
 <script>
@@ -793,7 +793,25 @@ ${areaLink ? `<p>Xem thêm: <a href="/khu-vuc/${areaLink.slug}.html">mặt bằn
     crumbLd([['Trang chủ', '/'], [d.quan, `/khu-vuc/${areaLink ? areaLink.slug : ''}.html`], [d.duong, `/duong/${d.slug}.html`]])];
   W(`duong/${d.slug}.html`, page({ path: `/duong/${d.slug}.html`, title: `Bán nhà đường ${d.duong}, ${d.quan} — giá từ ${num(d.min, 0)} tỷ | ${BRAND.name}`, desc: `Nhà đang bán trên đường ${d.duong} ${d.quan}: giá ${num(d.min, 0)}–${num(d.max, 0)} tỷ, phổ biến ~${num(d.med, 0)} tỷ. Tin thật kèm ảnh, có số hẻm, cập nhật ${today}. ${BRAND.name} ${BRAND.phone}.`, ld, body, upDate: today }));
 }
-console.log(`· Trang đường: ${DUONG_LIST.length}`);
+// (27/07) TRANG CHỈ MỤC /duong/ — hub gom 250 trang đường. Trước đây trang đường chỉ được link rải rác
+// (14 đường/trang khu vực) nên Google khó bò tới; mỗi trang đường lại link xuống ~19 căn -> đây là đường
+// vào ngắn nhất cho hàng nghìn trang căn đang kẹt "Discovered – currently not indexed".
+{
+  const theoQuan = {};
+  for (const d of DUONG_LIST) (theoQuan[d.quan] ||= []).push(d);
+  const dsBody = `<nav class="crumb"><a href="/">Trang chủ</a> › Bán nhà theo tên đường</nav>
+<h1>Bán nhà theo tên đường tại TP.HCM</h1>
+<p class="lead">${DUONG_LIST.length} tuyến đường đang có nhà chào bán trong kho ${esc(BRAND.name)} — bấm vào tên đường để xem toàn bộ căn trên trục đó kèm mặt bằng giá, cập nhật ${today}.</p>
+${Object.keys(theoQuan).sort().map(q => {
+  const ds = theoQuan[q].slice().sort((a, b) => b.n - a.n);
+  return `<h2>${esc(q)} — ${ds.length} tuyến đường</h2><p class="chips dark">${ds.map(d => `<a href="/duong/${d.slug}.html">${esc(d.duong)} · ${d.n} căn · từ ${num(d.min, 0)} tỷ</a>`).join('')}</p>`;
+}).join('\n')}
+<div class="cta"><p>Không thấy tuyến đường anh chị đang nhắm? Gọi/Zalo <a href="tel:${BRAND.phone}">${PHONE_FMT}</a> — Tuấn tra kho và báo căn phù hợp, kể cả tin chưa kịp lên web.</p></div>`;
+  W('duong/index.html', page({ path: '/duong/', title: `Bán nhà theo tên đường TP.HCM — ${DUONG_LIST.length} tuyến | ${BRAND.name}`,
+    desc: `Danh sách ${DUONG_LIST.length} tuyến đường đang có nhà bán tại Quận 1, Quận 3, Phú Nhuận, Bình Thạnh, Tân Bình... Xem giá từng đường, tin thật kèm ảnh, cập nhật ${today}. ${BRAND.name} ${BRAND.phone}.`,
+    ld: [crumbLd([['Trang chủ', '/'], ['Theo tên đường', '/duong/']])], body: dsBody, upDate: today }));
+}
+console.log(`· Trang đường: ${DUONG_LIST.length} + 1 trang chỉ mục /duong/`);
 
 // KHU VỰC index + từng khu
 {
@@ -869,7 +887,7 @@ ${has ? (() => {
   const lienQuan = `${khoi('hem-xe-hoi', `Nhà hẻm xe hơi ${esc(a.quan)} đang bán`, hxh)}
 ${khoi('mat-tien', `Nhà mặt tiền ${esc(a.quan)} đang bán`, mt)}
 ${khoi('theo-gia', `Nhà ${esc(a.quan)} dưới ${nguong} tỷ`, duoi)}
-${DUONG_KHU[a.quan] ? `<h3>Bán nhà theo tên đường tại ${esc(a.quan)}</h3><p class="chips">${DUONG_KHU[a.quan].map(d => `<a href="/duong/${d.slug}.html">${esc(d.duong)} · từ ${num(d.min, 0)} tỷ</a>`).join('')}</p>` : ''}`.trim();
+${DUONG_KHU[a.quan] ? `<h3>Bán nhà theo tên đường tại ${esc(a.quan)}</h3><p class="chips">${DUONG_KHU[a.quan].map(d => `<a href="/duong/${d.slug}.html">${esc(d.duong)} · từ ${num(d.min, 0)} tỷ</a>`).join('')}</p><p class="xemtat"><a href="/duong/">Xem tất cả tuyến đường đang có nhà bán →</a></p>` : ''}`.trim();
   return `<h2 id="tat-ca">Tất cả nhà đang bán tại ${esc(a.quan)}</h2>
 <p class="dim">${s.n} căn — trang 1/${soTrang}, ${PER} căn mỗi trang.</p>
 <div class="grid">${a.rows.slice(0, PER).map(card).join('')}</div>
@@ -1091,16 +1109,29 @@ ${nhoms.map(nh => `<h2 id="${nh}">${NHOM_TEN[nh] || nh}</h2><div class="grid">${
   console.log(`· Cẩm nang: đăng ${BAI.length} bài`);
 }
 
-// sitemap.xml
+// sitemap — (27/07) CHIA SITEMAP INDEX theo nhóm thay vì 1 file phẳng 13k URL.
+// Lý do: GSC báo cáo index THEO TỪNG FILE -> biết nhóm nào Google chịu index, nhóm nào bỏ (1 file phẳng chỉ
+// thấy 1 con số tổng, mù). Trang "xương sống" (chính/khu vực/đường/cẩm nang) tách riêng để crawl ưu tiên;
+// tin căn chia lô 5.000 URL. ⚠️ KHÔNG cắt bớt URL khỏi sitemap — bỏ URL không làm phần còn lại index nhanh hơn,
+// chỉ khiến Google không biết trang tồn tại.
 {
-  const urls = [['/', data.ts], ['/nha-dat/', data.ts], ['/khu-vuc/', data.ts], ['/hoi-dap.html', data.ts], ['/gioi-thieu.html', data.ts], ['/lien-he.html', data.ts],
-    ...AREAS.map(a => [`/khu-vuc/${a.slug}.html`, data.ts]),
+  const xmlUrls = arr => `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${arr.map(([p, ts]) => `<url><loc>${SITE}${p}</loc><lastmod>${new Date((ts || 0) * 1000).toISOString().slice(0, 10)}</lastmod></url>`).join('\n')}\n</urlset>`;
+  const files = [];
+  const addFile = (ten, arr) => { if (arr.length) { W(ten, xmlUrls(arr)); files.push(ten); } };
+
+  addFile('sitemap-chinh.xml', [['/', data.ts], ['/nha-dat/', data.ts], ['/khu-vuc/', data.ts], ['/duong/', data.ts],
+    ['/hoi-dap.html', data.ts], ['/gioi-thieu.html', data.ts], ['/lien-he.html', data.ts]]);
+  addFile('sitemap-khuvuc.xml', [...AREAS.map(a => [`/khu-vuc/${a.slug}.html`, data.ts]),
     // trang 2+ của khu vực (15/07): PHẢI có trong sitemap — đây là đường Google bò tới mấy ngàn căn nằm sâu
-    ...areasLive.flatMap(a => Array.from({ length: Math.max(0, (a.soTrang || 1) - 1) }, (_, i) => [`/khu-vuc/${a.slug}-trang-${i + 2}.html`, data.ts])),
-    ...L.map(l => [`/nha-dat/${l.url}.html`, l.up]),
-    ...(BAI.length ? [['/cam-nang/', data.ts], ...BAI.map(b => [`/cam-nang/${b.slug}.html`, new Date(b.pub).getTime() / 1000])] : []),
-    ...DUONG_LIST.map(d => [`/duong/${d.slug}.html`, data.ts])];
-  W('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(([p, ts]) => `<url><loc>${SITE}${p}</loc><lastmod>${new Date((ts || 0) * 1000).toISOString().slice(0, 10)}</lastmod></url>`).join('\n')}\n</urlset>`);
+    ...areasLive.flatMap(a => Array.from({ length: Math.max(0, (a.soTrang || 1) - 1) }, (_, i) => [`/khu-vuc/${a.slug}-trang-${i + 2}.html`, data.ts]))]);
+  addFile('sitemap-duong.xml', DUONG_LIST.map(d => [`/duong/${d.slug}.html`, data.ts]));
+  addFile('sitemap-camnang.xml', BAI.length ? [['/cam-nang/', data.ts], ...BAI.map(b => [`/cam-nang/${b.slug}.html`, new Date(b.pub).getTime() / 1000])] : []);
+  const tin = L.map(l => [`/nha-dat/${l.url}.html`, l.up]);
+  for (let i = 0; i < tin.length; i += 5000) addFile(`sitemap-tin-${i / 5000 + 1}.xml`, tin.slice(i, i + 5000));
+
+  const nay = new Date((data.ts || Date.now() / 1000) * 1000).toISOString().slice(0, 10);
+  W('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${files.map(f => `<sitemap><loc>${SITE}/${f}</loc><lastmod>${nay}</lastmod></sitemap>`).join('\n')}\n</sitemapindex>`);
+  console.log(`· sitemap index: ${files.length} file (${files.join(', ')})`);
 }
 
 // feed.xml (RSS tin mới)
