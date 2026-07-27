@@ -1,0 +1,19 @@
+name: T123 login test
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Thu login T123 tu IP GitHub
+        env:
+          U: ${{ secrets.T123_USER }}
+          P: ${{ secrets.T123_PASS }}
+        run: |
+          echo "IP may chu:"; curl -s https://api.ipify.org; echo
+          curl -s -X POST https://api-dtk.thangbk.com/auth/login \
+            -H "Content-Type: application/json" -H "x-api-version: v2" \
+            -H "Origin: https://tuan123.daitheky.net" -H "Referer: https://tuan123.daitheky.net/" \
+            -H "User-Agent: Mozilla/5.0" \
+            -d "{\"username\":\"$U\",\"password\":\"$P\"}" \
+            | python3 -c "import sys,json; o=json.load(sys.stdin); print('KET QUA:', o.get('message')); print('CO TOKEN:', 'CO' if (o.get('data') or {}).get('access_token') else 'KHONG')"
