@@ -1,6 +1,12 @@
 // Test kéo lại 1 căn cụ thể (đối chiếu lọc mới)
+import { homedir } from 'node:os';
+import { readFileSync } from 'node:fs';
 const GAS = 'https://script.google.com/macros/s/AKfycbz33hU71TC2nj4p1MnISJ3LP83lGYXn_xSFu5RTY6zjiBF9piY2mZl0o6gQjQ5w31Gowg/exec';
-const KEY = 'TSGTH';
+const KEY = (() => {   // 29/07: KHÔNG hardcode khoá (khoá cũ từng nằm CÔNG KHAI trong repo GitHub)
+  const _f = homedir() + '/.config/claude-bds/gas.env';
+  try { return (readFileSync(_f, 'utf8').match(/GAS_KEY[^"]*"([^"]+)"/) || [])[1].trim(); }
+  catch (e) { console.error('Thieu khoa - tao ' + _f + ' voi dong: GAS_KEY="..."'); process.exit(1); }
+})();
 const MA = process.argv[2];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function rfetch(u, o, t = 4) { for (let i = 0; i < t; i++) { try { return await fetch(u, o); } catch (e) { if (i === t - 1) throw e; await sleep(1500 * (i + 1)); } } }

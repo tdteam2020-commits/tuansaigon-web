@@ -1,9 +1,15 @@
 // KÉO THUMB CĐMG — BẢN v2 "ALL LOCAL" (15/07): crawl list + tải + upload ĐỀU Ở MÁY LOCAL.
+import { homedir } from 'node:os';
+import { readFileSync } from 'node:fs';
 // GAS chỉ làm 2 việc rẻ: cdmgcfg (1 lần: cookie + khu + danh sách căn đã có ảnh) + cdmgputthumbs (ghi LÔ 30 căn/lần).
 // -> Quota GAS từ ~56 phút xuống còn ~2 phút. Thumb 360x480, KHÔNG watermark, KHÔNG tốn lượt 200 căn/ngày.
 // Chạy: node tools/cdmg-thumb-local.mjs [pages] [pool]     vd: node tools/cdmg-thumb-local.mjs 40 6
 const GAS = 'https://script.google.com/macros/s/AKfycbz33hU71TC2nj4p1MnISJ3LP83lGYXn_xSFu5RTY6zjiBF9piY2mZl0o6gQjQ5w31Gowg/exec';
-const KEY = 'TSGTH';
+const KEY = (() => {   // 29/07: KHÔNG hardcode khoá (khoá cũ từng nằm CÔNG KHAI trong repo GitHub)
+  const _f = homedir() + '/.config/claude-bds/gas.env';
+  try { return (readFileSync(_f, 'utf8').match(/GAS_KEY[^"]*"([^"]+)"/) || [])[1].trim(); }
+  catch (e) { console.error('Thieu khoa - tao ' + _f + ' voi dong: GAS_KEY="..."'); process.exit(1); }
+})();
 const BASE = 'https://congdongmoigioi.pro';
 const PAGES = parseInt(process.argv[2] || '40', 10);   // độ sâu list mỗi quận (20 căn/trang)
 const POOL = parseInt(process.argv[3] || '6', 10);

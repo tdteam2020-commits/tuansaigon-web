@@ -2,9 +2,16 @@
 // Mỗi căn: tải ảnh gốc CĐMG (cookie, tuần tự nhẹ nhàng né rate-limit) -> cloudinary -> cdmgputanh (lọc + ghi cột Anh).
 // Xong -> node mirror.mjs rồi build web.
 const GAS = 'https://script.google.com/macros/s/AKfycbz33hU71TC2nj4p1MnISJ3LP83lGYXn_xSFu5RTY6zjiBF9piY2mZl0o6gQjQ5w31Gowg/exec';
-const KEY = 'TSGTH';
+const KEY = (() => {   // 29/07: KHÔNG hardcode khoá (khoá cũ từng nằm CÔNG KHAI trong repo GitHub)
+  const _f = homedir() + '/.config/claude-bds/gas.env';
+  try { return (readFileSync(_f, 'utf8').match(/GAS_KEY[^"]*"([^"]+)"/) || [])[1].trim(); }
+  catch (e) { console.error('Thieu khoa - tao ' + _f + ' voi dong: GAS_KEY="..."'); process.exit(1); }
+})();
 const POOL = parseInt(process.argv[2] || '5', 10);
 const CAP = parseInt(process.argv[3] || '0', 10);   // giới hạn số căn (chừa quota CĐMG 200/ngày); 0 = không giới hạn
+import { putAnh } from './r2put.mjs';   // kho ảnh R2 (thay Cloudinary 27/07)
+import { homedir } from 'node:os';
+import { readFileSync } from 'node:fs';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function rfetch(u, o, t = 5) { for (let i = 0; i < t; i++) { try { return await fetch(u, o); } catch (e) { if (i === t - 1) throw e; await sleep(1500 * (i + 1)); } } }
 const now = () => new Date().toISOString().slice(11, 19);
@@ -37,11 +44,7 @@ async function doCan(c) {
       const r = await rfetch(path, { headers: { Referer: 'https://congdongmoigioi.pro/NhaPho', 'User-Agent': 'Mozilla/5.0', Cookie: cfg.cookie } });
       if (r.status !== 200) { process.stdout.write(`x${r.status} `); continue; }
       const buf = Buffer.from(await r.arrayBuffer());
-      const fd = new FormData();
-      fd.append('file', new Blob([buf], { type: 'image/jpeg' }), 'i.jpg');
-      fd.append('upload_preset', cfg.preset);
-      const up = await (await rfetch(`https://api.cloudinary.com/v1_1/${cfg.cloud}/image/upload`, { method: 'POST', body: fd })).json();
-      if (up.secure_url) urls.push(up.secure_url);
+      urls.push(await putAnh(buf));   // 27/07: R2 thay Cloudinary
     } catch (e) { process.stdout.write('E'); }
     await sleep(120);
   }

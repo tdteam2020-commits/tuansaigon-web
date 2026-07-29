@@ -9,12 +9,19 @@
 //
 // Chạy: node tools/cdmg-kho-local.mjs [pages] [pool]     vd: node tools/cdmg-kho-local.mjs 500 6
 const GAS = 'https://script.google.com/macros/s/AKfycbz33hU71TC2nj4p1MnISJ3LP83lGYXn_xSFu5RTY6zjiBF9piY2mZl0o6gQjQ5w31Gowg/exec';
-const KEY = 'TSGTH';
+const KEY = (() => {   // 29/07: KHÔNG hardcode khoá (khoá cũ từng nằm CÔNG KHAI trong repo GitHub)
+  const _f = homedir() + '/.config/claude-bds/gas.env';
+  try { return (readFileSync(_f, 'utf8').match(/GAS_KEY[^"]*"([^"]+)"/) || [])[1].trim(); }
+  catch (e) { console.error('Thieu khoa - tao ' + _f + ' voi dong: GAS_KEY="..."'); process.exit(1); }
+})();
 const BASE = 'https://congdongmoigioi.pro';
 const PAGES = parseInt(process.argv[2] || '500', 10);   // độ sâu list mỗi quận (20 căn/trang)
 const POOL = parseInt(process.argv[3] || '6', 10);
 const SNAP_BATCH = 1200;   // căn/lô POST snapshot
 const THUMB_BATCH = 30;    // thumb/lô ghi Sheet
+import { putAnh, putRaw } from './r2put.mjs';   // kho ảnh R2 (thay Cloudinary 27/07)
+import { homedir } from 'node:os';
+import { readFileSync } from 'node:fs';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const now = () => new Date().toLocaleTimeString('vi-VN');
 const log = (...a) => console.log(`[${now()}]`, ...a);
@@ -107,11 +114,7 @@ async function grab(c) {
     if (r.status !== 200) return null;
     const buf = Buffer.from(await r.arrayBuffer());
     if (buf.length < 3000) return null;
-    const fd = new FormData();
-    fd.append('file', new Blob([buf], { type: 'image/jpeg' }), 't.jpg');
-    fd.append('upload_preset', cfg.preset);
-    const up = await (await rfetch(`https://api.cloudinary.com/v1_1/${cfg.cloud}/image/upload`, { method: 'POST', body: fd })).json();
-    return up.secure_url ? { ma: c.ma, url: up.secure_url } : null;
+    return { ma: c.ma, url: await putAnh(buf) };   // 27/07: R2 thay Cloudinary
   } catch (e) { return null; }
 }
 
@@ -125,13 +128,7 @@ async function get(action, params) {
   gasCalls++;
   return await r.json();
 }
-async function upRaw(obj) {
-  const fd = new FormData();
-  fd.append('file', new Blob([JSON.stringify(obj)], { type: 'application/json' }), 'snap.json');
-  fd.append('upload_preset', cfg.preset);
-  const up = await (await rfetch(`https://api.cloudinary.com/v1_1/${cfg.cloud}/raw/upload`, { method: 'POST', body: fd })).json();
-  return up.secure_url || '';
-}
+async function upRaw(obj) { return await putRaw(obj); }   // 27/07: R2 thay Cloudinary raw
 async function flushSnap(rows) {
   const lot = rows.map(x => ({ ma: x.ma, uuid: x.uuid, khu: x.khu, addr: x.addr, gia: x.gia, dt: x.dt,
     vitri: x.vitri, status: x.status, upd: x.upd, upd_min: x.upd_min, kt: x.kt, tang: x.tang, co_anh: x.co_anh }));

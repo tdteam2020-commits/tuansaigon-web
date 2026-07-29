@@ -1,10 +1,16 @@
 // KÉO THUMB CĐMG MIỄN PHÍ (15/07) — thumb nằm trong trang LIST nên KHÔNG tốn lượt 200 căn/ngày.
+import { homedir } from 'node:os';
+import { readFileSync } from 'node:fs';
 // Luồng: GAS cdmgthumbs (list + filter hinh_nha, trả thumb URL + cookie) -> local tải (IP thường, nhanh)
 //        -> cloudinary -> GAS cdmgputthumb -> cột Anh_thumb(25) -> weblist dùng khi chưa có ảnh FULL.
 // Thumb 360x480, KHÔNG watermark. Ảnh FULL vẫn phải local-pull (cdmg-pull.mjs) + tốn lượt 200.
 // Chạy: node tools/cdmg-thumb-pull.mjs [pool] [cap]     vd: node tools/cdmg-thumb-pull.mjs 6 0   (0 = không giới hạn)
 const GAS = 'https://script.google.com/macros/s/AKfycbz33hU71TC2nj4p1MnISJ3LP83lGYXn_xSFu5RTY6zjiBF9piY2mZl0o6gQjQ5w31Gowg/exec';
-const KEY = 'TSGTH';
+const KEY = (() => {   // 29/07: KHÔNG hardcode khoá (khoá cũ từng nằm CÔNG KHAI trong repo GitHub)
+  const _f = homedir() + '/.config/claude-bds/gas.env';
+  try { return (readFileSync(_f, 'utf8').match(/GAS_KEY[^"]*"([^"]+)"/) || [])[1].trim(); }
+  catch (e) { console.error('Thieu khoa - tao ' + _f + ' voi dong: GAS_KEY="..."'); process.exit(1); }
+})();
 const POOL = parseInt(process.argv[2] || '6', 10);
 const CAP = parseInt(process.argv[3] || '0', 10);
 // PAGES = độ sâu quét list mỗi quận (15/07: mặc định 4 trang = ~80 căn đầu -> BỎ SÓT hàng ngàn căn nằm sâu;
