@@ -225,15 +225,15 @@ function fbarBlock(areas, preQ = '') {
 <span class="fkq" id="fkq"></span>
 </div>
 <div class="grid" id="fgrid" hidden></div>
-<p class="xemtat" id="fmore" hidden><a href="#" id="fmorea">Xem thêm →</a></p>
+<nav class="pager" id="fmore" aria-label="Phân trang kết quả lọc" hidden></nav>
 <script>${jsLoc(preQ)}</script>`;
 }
 // Script bộ lọc tách riêng để KIỂM CÚ PHÁP lúc dựng (xem chú thích ở fbarBlock).
 function jsLoc(preQ) {
   const js = `(function(){
 var fq=document.getElementById('fq'),fv=document.getElementById('fv'),g1=document.getElementById('fg1'),g2=document.getElementById('fg2'),d1=document.getElementById('fd1'),ft=document.getElementById('ft'),
-kq=document.getElementById('fkq'),gr=document.getElementById('fgrid'),mo=document.getElementById('fmore'),moa=document.getElementById('fmorea');
-var IX=null,dangTai=false,hit=[],hienN=0,LO=36,daDung=false,PRE='${R2_URL}';
+kq=document.getElementById('fkq'),gr=document.getElementById('fgrid'),mo=document.getElementById('fmore');
+var IX=null,dangTai=false,hit=[],trang=1,PER=24,daDung=false,PRE='${R2_URL}';
 function khoiTinh(){return document.getElementById('fstatic')}
 /* bỏ dấu tiếng Việt để gõ "le van sy" ra "Lê Văn Sỹ". (\\u0300-\\u036f = dấu tổ hợp NFD; lưới new Function kiểm cú pháp lúc dựng) */
 function kd(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/đ/g,'d')}
@@ -246,8 +246,25 @@ function the(r){var vt=IX.v[r[6]];
 return '<a class="card" href="/nha-dat/'+r[0]+'.html"><div class="thumb"><img src="'+anh(r[2])+'" alt="'+r[1]+'" loading="lazy" onerror="this.parentNode.style.display=\\'none\\'"></div>'+
 '<div class="ci"><div class="cirow"><span class="ctag">'+(vt||'Nhà phố')+'</span><span class="cgia">'+r[4]+'</span></div><h3>'+r[1]+'</h3><p class="tsm">'+(r[7]?'<b>'+r[7]+'m²</b>':'')+(r[8]?' · '+r[8]+' tầng':'')+(r[9]?' · ngang '+r[9]+'m':'')+'</p>'+
 '<p class="dim">'+(r[10]?r[10]+', ':'')+IX.qt[r[5]]+' · cập nhật '+r[11]+'</p></div></a>'}
-function veThem(){var lat=hit.slice(hienN,hienN+LO);gr.insertAdjacentHTML('beforeend',lat.map(the).join(''));hienN+=lat.length;
-mo.hidden=hienN>=hit.length;if(!mo.hidden)moa.textContent='Xem thêm '+Math.min(LO,hit.length-hienN)+' căn (còn '+(hit.length-hienN)+') →'}
+/* PHÂN TRANG kết quả lọc (31/07 Tuấn bắt: "dồn 1 cục kéo quài không hết"). Trước đây bấm "Xem thêm"
+   nạp thêm 36 căn/lần và GIỮ LẠI hết -> lọc ra 3.000 căn phải bấm 80 lần, DOM phồng vài ngàn thẻ,
+   điện thoại giật. Giờ 24 căn/trang, ĐỔI TRANG LÀ THAY chứ không cộng dồn -> DOM luôn nhẹ.
+   Dùng lại đúng class .pager/.pcur/.pnav/.pgap của trang khu vực cho đồng bộ giao diện. */
+function soTrangDs(cur,tong){var co={},ns=[1,2,tong-1,tong,cur-2,cur-1,cur,cur+1,cur+2],ds=[],i,k;
+for(i=0;i<ns.length;i++){if(ns[i]>=1&&ns[i]<=tong)co[ns[i]]=1}
+for(k in co)ds.push(parseInt(k,10));ds.sort(function(a,b){return a-b});return ds}
+function veTrang(n,keo){var tong=Math.max(1,Math.ceil(hit.length/PER));
+if(n<1)n=1;if(n>tong)n=tong;trang=n;
+gr.innerHTML=hit.slice((n-1)*PER,n*PER).map(the).join('');
+kq.textContent='→ '+hit.length+' căn khớp'+(tong>1?' · trang '+n+'/'+tong:'');
+if(tong<2){mo.innerHTML='';mo.hidden=true}
+else{var ds=soTrangDs(n,tong),h='',truoc=0,i,s;
+if(n>1)h+='<a class="pnav" href="#" data-t="'+(n-1)+'">‹ Trước</a>';
+for(i=0;i<ds.length;i++){s=ds[i];if(truoc&&s-truoc>1)h+='<span class="pgap">…</span>';
+h+=(s===n?'<span class="pcur" aria-current="page">'+s+'</span>':'<a href="#" data-t="'+s+'">'+s+'</a>');truoc=s}
+if(n<tong)h+='<a class="pnav" href="#" data-t="'+(n+1)+'">Sau ›</a>';
+mo.innerHTML=h;mo.hidden=false}
+if(keo&&gr.scrollIntoView)gr.scrollIntoView({block:'start',behavior:'smooth'})}
 function batLoc(){return !!(fq.value||fv.value||g1.value!==''||g2.value!==''||d1.value!==''||ft.value.trim())}
 function loc(){if(!daDung)return;var st=khoiTinh();
 if(!batLoc()){if(st)st.hidden=false;gr.hidden=true;mo.hidden=true;kq.textContent='';return}
@@ -262,18 +279,103 @@ var qi=q?IX.q.indexOf(q):-1,vi=v?IX.v.indexOf(v):-1;
    -> lọc Quận 7 mà XỔ RA TOÀN BỘ 12.684 căn (Tuấn bắt). Lệch slug đã sửa, đây là lưới chặn dưới. */
 if((q&&qi<0)||(v&&vi<0))hit=[];
 else hit=IX.r.filter(function(r){return (qi<0||r[5]===qi)&&(vi<0||r[6]===vi)&&r[3]>=lo&&r[3]<=hi&&(!dt||r[7]>=dt)&&(!kw||kd(r[1]).indexOf(kw)>=0)});
-if(st)st.hidden=true;gr.hidden=false;gr.innerHTML='';hienN=0;
-kq.textContent='→ '+hit.length+' căn khớp';
-if(!hit.length){gr.innerHTML='<p class="dim">Không có căn nào khớp. Anh chị nới tầm giá/diện tích, hoặc gọi ${PHONE_FMT} để Tuấn tìm giúp.</p>';mo.hidden=true;return}
-veThem()}
+if(st)st.hidden=true;gr.hidden=false;
+if(!hit.length){gr.innerHTML='<p class="dim">Không có căn nào khớp. Anh chị nới tầm giá/diện tích, hoặc gọi ${PHONE_FMT} để Tuấn tìm giúp.</p>';kq.textContent='→ 0 căn khớp';mo.innerHTML='';mo.hidden=true;return}
+veTrang(1,false)}
 function dung(){daDung=true;loc()}
-moa.addEventListener('click',function(e){e.preventDefault();veThem()});
+mo.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[data-t]'):null;if(!a)return;e.preventDefault();veTrang(parseInt(a.getAttribute('data-t'),10),true)});
 [fq,fv].forEach(function(x){x.addEventListener('change',dung)});
 [g1,g2,d1,ft].forEach(function(x){x.addEventListener('input',dung)});})();`;
   // 🛡 LƯỚI (16/07, dính 2 lần): script này nằm TRONG template literal của build.mjs -> dấu \\ bị NUỐT.
   // Lần 1: regex /^https?:\\/\\// in ra thành /^https?:/// -> JS đọc // là COMMENT -> CHẾT CẢ BỘ LỌC,
   // mà build vẫn báo 'Dựng xong' nên deploy web hỏng lúc nào không hay. Giờ kiểm cú pháp NGAY LÚC DỰNG.
   try { new Function(js); } catch (e) { throw new Error('❌ SCRIPT BỘ LỌC HỎNG CÚ PHÁP -> DỪNG BUILD: ' + e.message); }
+  return js;
+}
+// ---------- PODCAST "Chuyện nghề môi giới" nhúng vào bài cẩm nang (31/07) ----------
+// Gắn ĐÚNG tập vào ĐÚNG bài cùng chủ đề. KHÔNG nhúng iframe YouTube thẳng (kéo theo ~1,3MB script của
+// Google mỗi lượt mở trang, tụt điểm tốc độ) — chỉ đặt 1 ẢNH BÌA TỰ HOST TRÊN R2 + nút play vẽ bằng CSS;
+// khách BẤM mới nạp trình phát thật. Khung để sẵn tỉ lệ 16/9 nên trang không giật chữ khi ảnh về.
+// Ảnh bìa lấy/nén bằng `node tools/podcast-thumb.mjs '{"<tập>":"<mã YouTube>"}'`.
+const PODCAST = [
+  { ep: 1, slug: 'dat-coc-mua-nha-sao-cho-khong-mat-tien', yt: '-GnNMYhyvtI', giay: 185, pub: '2026-07-20',
+    ten: 'Đặt cọc mua nhà sao cho AN TOÀN? 5 điều giữ tiền',
+    mo: 'Quét mã QR kiểm tra sổ thật, xác minh đúng chủ, hợp đồng cọc có phạt cọc (Điều 328 Bộ luật Dân sự 2015), cọc 5–10%, tra ngăn chặn trước khi ký.',
+    anh: 'https://anh.tuansaigon.com/a/af645b75ebd6167227854ee354f803d7725b8646.jpg' },
+  { ep: 2, slug: 'vay-ngan-hang-mua-nha-can-biet', yt: 'znC8j5gphpQ', giay: 236, pub: '2026-07-21',
+    ten: 'Vay ngân hàng mua nhà — 5 điều PHẢI biết trước khi ký',
+    mo: 'Khoản trả mỗi tháng bao nhiêu là vừa sức, lãi thả nổi sau ưu đãi, phí phạt trả trước hạn và những chỗ hồ sơ hay rớt.',
+    anh: 'https://anh.tuansaigon.com/a/bfb241f7569c45e9d4cefb72b728646564c949da.jpg' },
+  { ep: 3, slug: 'mua-nha-dang-the-chap-ngan-hang', yt: 'bG_crEcQdKs', giay: 180, pub: '2026-07-22',
+    ten: 'Mua nhà đang thế chấp ngân hàng — làm sao cho an toàn',
+    mo: 'Nhà đang cắm ngân hàng vẫn mua được, miễn làm đúng thứ tự giải chấp và ràng buộc rõ trong hợp đồng cọc.',
+    anh: 'https://anh.tuansaigon.com/a/eaf0ac38ee74a079c42b1a361515301255e3096d.jpg' },
+  { ep: 4, slug: 'thue-phi-khi-mua-ban-nha', yt: 'XndekITyeT8', giay: 167, pub: '2026-07-23',
+    ten: 'Thuế phí mua bán nhà 2026 — ai trả khoản nào',
+    mo: 'Thuế thu nhập, lệ phí trước bạ, phí công chứng — khoản nào của bên bán, khoản nào bên mua, và chỗ hay cãi nhau lúc ra công chứng.',
+    anh: 'https://anh.tuansaigon.com/a/f96af97c56c1cc8a222ee13f076c8b2bdbf07fd2.jpg' },
+  { ep: 5, slug: 'dan-xep-lich-xem-nha-hieu-qua', yt: 'RhljAOcbHkQ', giay: 180, pub: '2026-07-26',
+    ten: 'Đi xem nhà — nhìn gì, hỏi gì để khỏi hớ',
+    mo: 'Thứ tự xem nhà cho hiệu quả, những chỗ chủ hay giấu, và câu hỏi nên đặt ngay tại chỗ.',
+    anh: 'https://anh.tuansaigon.com/a/b44e0cbd810176615ce14c651632df1fa8556ab9.jpg' },
+  { ep: 6, slug: 'kiem-tra-quy-hoach-truoc-khi-mua-nha', yt: 'ZZHspRFl2hU', giay: 256, pub: '2026-07-28',
+    ten: 'Quy hoạch và lộ giới — kiểm thế nào trước khi xuống cọc',
+    mo: 'Cầm số tờ số thửa đi tra ở đâu, nhìn ra nhà có dính ranh dự án hay lộ giới cắt vào bao nhiêu mét.',
+    anh: 'https://anh.tuansaigon.com/a/ca4dd4d750e774f3bd8b94c076238552785255ce.jpg' },
+  { ep: 7, slug: 'no-xau-co-vay-mua-nha-duoc-khong', yt: 'BMT4HqtRYro', giay: 270, pub: '2026-07-28',
+    ten: 'Nợ xấu CIC — còn vay mua nhà được không',
+    mo: 'Nợ xấu nhóm mấy thì hết cửa, bao lâu mới sạch hồ sơ, và cách kiểm tra CIC của chính mình trước khi nộp vay.',
+    anh: 'https://anh.tuansaigon.com/a/371a97e1b6db1b5ce7f1d3699558d54c9c9edf13.jpg' },
+  { ep: 8, slug: 'khai-thue-khi-ban-nha-tranh-bi-phat', yt: '9gfH0yNwN1k', giay: 251, pub: '2026-07-30',
+    ten: 'Miễn thuế khi bán nhà duy nhất 2026 — điều kiện thật',
+    mo: 'Điều kiện để được miễn thuế thu nhập khi bán căn nhà duy nhất, và những trường hợp tưởng được miễn mà không.',
+    anh: 'https://anh.tuansaigon.com/a/7a04000b0b4c974dd66ac28ac2d1c5b7099c02b8.jpg' },
+];
+const POD_THEO_BAI = {}; PODCAST.forEach(p => { POD_THEO_BAI[p.slug] = p; });
+const phutGiay = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+const isoThoiLuong = s => 'PT' + (s >= 60 ? Math.floor(s / 60) + 'M' : '') + (s % 60) + 'S';
+function podKhoi(p) {
+  return `<figure class="pod">
+<button class="podbtn" type="button" data-yt="${p.yt}" aria-label="Phát podcast: ${esc(p.ten)}">
+<img src="${p.anh}" alt="Podcast tập ${p.ep}: ${esc(p.ten)} — Tuấn Sài Gòn" width="800" height="450" loading="lazy" decoding="async">
+<span class="podplay" aria-hidden="true"></span><span class="podlen">${phutGiay(p.giay)}</span></button>
+<figcaption>🎙 <b>Nghe Tuấn kể tập ${p.ep}</b> — ${esc(p.ten)}. Bấm để xem tại chỗ, hoặc <a href="https://www.youtube.com/watch?v=${p.yt}" target="_blank" rel="noopener">mở trên YouTube</a>.</figcaption>
+</figure>`;
+}
+function podLd(p) {
+  return { '@type': 'VideoObject', name: p.ten, description: p.mo, thumbnailUrl: [p.anh],
+    uploadDate: p.pub, duration: isoThoiLuong(p.giay), embedUrl: `https://www.youtube.com/embed/${p.yt}`,
+    contentUrl: `https://www.youtube.com/watch?v=${p.yt}`, publisher: { '@id': `${SITE}/#agent` }, inLanguage: 'vi' };
+}
+// Chỉ chèn vào trang NÀO CÓ podcast — script nhỏ, đặt cuối bài.
+function jsPod() {
+  const js = `(function(){var ds=document.querySelectorAll('.podbtn');if(!ds.length)return;
+Array.prototype.forEach.call(ds,function(b){b.addEventListener('click',function(){
+var id=b.getAttribute('data-yt'),f=document.createElement('iframe');
+f.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0';
+f.title='Podcast Chuyện nghề môi giới';f.loading='lazy';f.allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+f.setAttribute('allowfullscreen','');f.setAttribute('frameborder','0');
+b.parentNode.replaceChild(f,b);})});})();`;
+  try { new Function(js); } catch (e) { throw new Error('❌ SCRIPT PODCAST HỎNG CÚ PHÁP -> DỪNG BUILD: ' + e.message); }
+  return js;
+}
+
+// Script form LIÊN HỆ — tách riêng để kiểm cú pháp lúc dựng (như jsLoc).
+// ⚠️ 31/07: KHÔNG dùng attribute `pattern` cho ô SĐT nữa. Trình duyệt nay đọc pattern ở chế độ regex 'v',
+// trong đó ( ) và - nằm trần trong [ ] là CÚ PHÁP SAI -> console báo lỗi mọi lượt truy cập, mà escape thì
+// dấu \ bị template literal của build.mjs nuốt. Chuyển sang kiểm bằng JS: đếm CHỮ SỐ >= 8, cho phép khách
+// gõ 0777-088-622 hay (028) 123 4567 — thà nhận thừa còn hơn CHẶN NHẦM một khách thật.
+function jsLienHe() {
+  const js = `(function(){var f=document.getElementById('lhf'),kq=document.getElementById('lhkq'),lo=document.getElementById('lhloi');if(!f)return;
+function soChuSo(s){var n=0,i;for(i=0;i<s.length;i++){if(s.charAt(i)>='0'&&s.charAt(i)<='9')n++}return n}
+f.addEventListener('submit',function(e){e.preventDefault();
+var ten=f.ten.value.trim(),sdt=f.sdt.value.trim();
+if(!ten||soChuSo(sdt)<8){lo.hidden=false;return}
+lo.hidden=true;
+var q='action=lienhe&ten='+encodeURIComponent(ten)+'&sdt='+encodeURIComponent(sdt)+'&nd='+encodeURIComponent(f.nd.value)+'&hp='+encodeURIComponent(f.hp.value);
+fetch('${GAS}?'+q).catch(function(){});
+kq.hidden=false;f.querySelector('button').disabled=true;});})();`;
+  try { new Function(js); } catch (e) { throw new Error('❌ SCRIPT FORM LIÊN HỆ HỎNG CÚ PHÁP -> DỪNG BUILD: ' + e.message); }
   return js;
 }
 const faqLd = qa => ({ '@type': 'FAQPage', mainEntity: qa.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) });
@@ -520,6 +622,21 @@ h2{font-size:1.55rem;margin:34px 0 14px;color:var(--chu)}
 .ftxt:focus{outline:2px solid var(--vang)}
 .xemtat{margin:6px 0 4px}.xemtat a{font-size:.9rem;color:var(--chinh2);font-weight:600;text-decoration:none}.xemtat a:hover{text-decoration:underline}
 /* Phân trang khu vực (15/07) — nút to đủ bấm bằng ngón cái trên mobile (44px), tự xuống dòng khi nhiều trang */
+/* PODCAST nhúng bài cẩm nang (31/07): khung 16/9 dựng SẴN nên trang không giật khi ảnh bìa về.
+   Chỉ là ảnh + nút play CSS; bấm mới thay bằng iframe YouTube thật. */
+.pod{margin:20px 0 24px}
+.pod .podbtn,.pod iframe{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#1a1013}
+.pod .podbtn{position:relative;padding:0;cursor:pointer;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.14)}
+.pod .podbtn img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}
+.pod .podbtn:hover img{transform:scale(1.03)}
+.pod .podplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:44px;border-radius:11px;background:rgba(20,10,12,.72);border:1px solid rgba(255,255,255,.25)}
+.pod .podplay:after{content:"";position:absolute;left:25px;top:13px;border-style:solid;border-width:9px 0 9px 15px;border-color:transparent transparent transparent #fff}
+.pod .podbtn:hover .podplay{background:var(--chinh)}
+.pod .podlen{position:absolute;right:9px;bottom:9px;background:rgba(0,0,0,.78);color:#fff;font-size:.78rem;font-weight:600;padding:2px 7px;border-radius:5px}
+.pod figcaption{font-size:.92rem;color:#5f5a4c;margin-top:9px;line-height:1.55}
+/* [hidden] PHẢI thắng mọi display: .pager/.grid đặt display:flex|grid có độ ưu tiên cao hơn UA stylesheet
+   -> gắn hidden mà khối VẪN HIỆN (thanh phân trang lọc nổi lên khi chưa lọc gì). Chốt chặn 31/07. */
+[hidden]{display:none!important}
 .pager{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;margin:22px 0 8px}
 .pager a,.pager .pcur{min-width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0 12px;border-radius:10px;font-weight:600;font-size:.95rem;text-decoration:none}
 .pager a{color:var(--chinh2);border:1px solid var(--vien);background:#fff}
@@ -712,7 +829,10 @@ ${faqHtml(FAQ.slice(0, 4))}
 <p class="lead">Toàn bộ căn đang chào bán trong kho ${esc(BRAND.name)}, sắp theo tin mới nhất. Giá lẻ được làm tròn thành "hơn X tỷ" — gọi ${BRAND.phone} đọc mã tin để biết giá chính xác và vị trí.</p>
 ${fbarBlock(areasLive)}
 <div id="fstatic">
-${areasLive.filter(a => a.rows.length).map(a => `<h2 id="${a.slug}">${esc(a.ten)}</h2><div class="grid">${a.rows.slice(0, 24).map(card).join('')}</div>${a.rows.length > 24 ? `<p class="xemtat"><a href="/khu-vuc/${a.slug}.html">Xem tất cả ${esc(a.quan)} →</a></p>` : ''}`).join('\n')}
+${/* 31/07: 24 thẻ × 10 quận = 240 thẻ dồn 1 cục, trang 198KB, "kéo quài không hết" (Tuấn bắt).
+      Hạ còn 12 thẻ/quận — mỗi khu vẫn có mặt để Google đọc, khách muốn xem hết thì có bộ lọc phân
+      trang ở trên hoặc link "Xem tất cả" của từng quận (trang khu vực vốn đã phân trang 24 căn). */''}
+${areasLive.filter(a => a.rows.length).map(a => `<h2 id="${a.slug}">${esc(a.ten)}</h2><div class="grid">${a.rows.slice(0, 12).map(card).join('')}</div>${a.rows.length > 12 ? `<p class="xemtat"><a href="/khu-vuc/${a.slug}.html">Xem tất cả ${num(a.rows.length, 0)} căn ${esc(a.quan)} →</a></p>` : ''}`).join('\n')}
 ${COC.length ? `<h2 id="da-coc">Giao dịch gần đây — đã có khách cọc (${COC.length} căn)</h2>
 <p class="dim">Các căn dưới đây đã có khách đặt cọc qua kho tin. Anh chị thích căn nào tương tự, gọi ${PHONE_FMT} để Tuấn lọc căn cùng khu, cùng tầm giá.</p>
 <div class="grid">${COC.slice(0, 12).map(card).join('')}</div>` : ''}
@@ -957,19 +1077,16 @@ ${faqHtml(FAQ)}
 <h2>Để lại thông tin — Tuấn gọi lại</h2>
 <form id="lhf" class="lhform" autocomplete="on">
 <input name="ten" placeholder="Tên anh chị" required maxlength="60">
-<input name="sdt" placeholder="Số điện thoại / Zalo" required maxlength="15" inputmode="tel" pattern="[0-9+. ()-]{8,15}">
+<input name="sdt" placeholder="Số điện thoại / Zalo" required maxlength="15" inputmode="tel">
 <input name="hp" style="display:none" tabindex="-1" autocomplete="off">
 <textarea name="nd" placeholder="Nhu cầu (vd: cần nhà hẻm Phú Nhuận tầm 6 tỷ)" rows="3" maxlength="300"></textarea>
 <button class="btn gold" type="submit">Gửi cho Tuấn</button>
 <p class="dim">Thông tin chỉ dùng để Tuấn liên hệ lại — không chia sẻ cho bên nào khác.</p>
 <p class="fkq" id="lhkq" hidden>✅ Đã gửi! Tuấn sẽ gọi lại cho anh chị sớm nhất.</p>
+<p class="fkq" id="lhloi" hidden style="color:#b42318">Anh chị kiểm lại giúp: cần có tên và số điện thoại (ít nhất 8 số).</p>
 </form>
 <script>
-(function(){var f=document.getElementById('lhf'),kq=document.getElementById('lhkq');if(!f)return;
-f.addEventListener('submit',function(e){e.preventDefault();
-var q='action=lienhe&ten='+encodeURIComponent(f.ten.value)+'&sdt='+encodeURIComponent(f.sdt.value)+'&nd='+encodeURIComponent(f.nd.value)+'&hp='+encodeURIComponent(f.hp.value);
-fetch('${GAS}?'+q).catch(function(){});
-kq.hidden=false;f.querySelector('button').disabled=true;});})();
+${jsLienHe()}
 </script>`;
     W('lien-he.html', page({ path: '/lien-he.html', title: `Liên hệ Tuấn Sài Gòn — mua bán, ký gửi nhà trung tâm TP.HCM | ${BRAND.name}`, desc: `Gọi/Zalo ${PHONE_FMT} — Tuấn nghe máy 8h–21h cả cuối tuần. Mua, bán, định giá, ký gửi nhà phố – biệt thự Quận 1, Quận 3, Phú Nhuận, Bình Thạnh... Khảo sát định giá miễn phí, cập nhật ${today}.`, ld: [crumbLd([['Trang chủ', '/'], ['Liên hệ', '/lien-he.html']])], body: lhBody, upDate: today }));
   }
@@ -1091,19 +1208,25 @@ if (BAI.length) {
   mkdirSync(join(DIST, 'cam-nang'), { recursive: true });
   const dV = iso => { const [y, m, d] = iso.split('-'); return `${+d}/${+m}/${y}`; };
   const baiCard = b => `<a class="card" href="/cam-nang/${b.slug}.html"><div class="ci"><p class="dim" style="margin:0 0 4px">${NHOM_TEN[b.nhom] || 'Cẩm nang'} · ${dV(b.pub)}</p><h3>${esc(b.title)}</h3><p class="tsm">${esc(b.mota)}</p></div></a>`;
+  let soPod = 0;
   for (const b of BAI) {
     const cung = BAI.filter(x => x.nhom === b.nhom && x.slug !== b.slug).slice(0, 3);
+    const pod = POD_THEO_BAI[b.slug] || null;   // bài có podcast cùng chủ đề thì nhúng (31/07)
+    if (pod) soPod++;
     const body = `<nav class="crumb"><a href="/">Trang chủ</a> › <a href="/cam-nang/">Cẩm nang</a> › ${esc(NHOM_TEN[b.nhom] || '')}</nav>
 <h1>${esc(b.title)}</h1>
 <p class="dim">${NHOM_TEN[b.nhom] || 'Cẩm nang'} · Tuấn Sài Gòn · cập nhật ${dV(b.pub)}</p>
 <div class="tldr"><b>Trả lời ngắn:</b> ${esc(b.mota)}</div>
+${pod ? podKhoi(pod) : ''}
 ${b.bai}
 <div class="abox">${AVA ? `<img src="${AVA}" alt="Tuấn Sài Gòn" width="56" height="56">` : ''}<p><b>Tuấn Sài Gòn</b> — môi giới trực tiếp hơn 5 năm tại khu trung tâm TP.HCM (Quận 1, Quận 3, Phú Nhuận, Bình Thạnh…). Vướng đúng tình huống trong bài? Gọi/Zalo <a href="tel:${BRAND.phone}">${PHONE_FMT}</a> — nghe kể cụ thể rồi mới tư vấn, không mất phí.</p></div>
 ${cung.length ? `<h2>Đọc tiếp cùng chủ đề</h2><div class="grid">${cung.map(baiCard).join('')}</div>` : ''}
-<p>Xem thêm: <a href="/nha-dat/">nhà đang bán tại TP.HCM</a> · <a href="/khu-vuc/">mặt bằng giá từng khu vực</a></p>`;
+<p>Xem thêm: <a href="/nha-dat/">nhà đang bán tại TP.HCM</a> · <a href="/khu-vuc/">mặt bằng giá từng khu vực</a></p>
+${pod ? `<script>${jsPod()}</script>` : ''}`;
     const ld = [{ '@type': 'Article', headline: b.title, description: b.mota, datePublished: b.pub, dateModified: b.pub,
       author: { '@id': `${SITE}/#agent` }, publisher: { '@id': `${SITE}/#agent` }, mainEntityOfPage: `${SITE}/cam-nang/${b.slug}.html`, inLanguage: 'vi' },
       crumbLd([['Trang chủ', '/'], ['Cẩm nang', '/cam-nang/'], [b.title, `/cam-nang/${b.slug}.html`]])];
+    if (pod) ld.push(podLd(pod));
     W(`cam-nang/${b.slug}.html`, page({ path: `/cam-nang/${b.slug}.html`, title: `${b.title} | ${BRAND.name}`, desc: b.mota, ld, body, upDate: dV(b.pub) }));
   }
   const nhoms = [...new Set(BAI.map(b => b.nhom))];
