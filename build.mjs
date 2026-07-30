@@ -678,6 +678,11 @@ h2{font-size:1.55rem;margin:34px 0 14px;color:var(--chu)}
 .pod .podbtn:hover .podplay{background:var(--chinh)}
 .pod .podlen{position:absolute;right:9px;bottom:9px;background:rgba(0,0,0,.78);color:#fff;font-size:.78rem;font-weight:600;padding:2px 7px;border-radius:5px}
 .pod figcaption{font-size:.92rem;color:#5f5a4c;margin-top:9px;line-height:1.55}
+/* nhãn 🎙 trên thẻ bài + thẻ trong khối "Nghe podcast" ở trang /cam-nang/ */
+.pdtag{color:var(--chinh);font-weight:600;white-space:nowrap}
+.podcard .thumb{position:relative;aspect-ratio:9/16;max-height:240px;background:#1a1013}
+.podcard .thumb img{width:100%;height:100%;object-fit:cover;object-position:center 34%}
+.podcard .podlen{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.78);color:#fff;font-size:.76rem;font-weight:600;padding:2px 7px;border-radius:5px}
 /* [hidden] PHẢI thắng mọi display: .pager/.grid đặt display:flex|grid có độ ưu tiên cao hơn UA stylesheet
    -> gắn hidden mà khối VẪN HIỆN (thanh phân trang lọc nổi lên khi chưa lọc gì). Chốt chặn 31/07. */
 [hidden]{display:none!important}
@@ -1257,7 +1262,10 @@ try {
 if (BAI.length) {
   mkdirSync(join(DIST, 'cam-nang'), { recursive: true });
   const dV = iso => { const [y, m, d] = iso.split('-'); return `${+d}/${+m}/${y}`; };
-  const baiCard = b => `<a class="card" href="/cam-nang/${b.slug}.html"><div class="ci"><p class="dim" style="margin:0 0 4px">${NHOM_TEN[b.nhom] || 'Cẩm nang'} · ${dV(b.pub)}</p><h3>${esc(b.title)}</h3><p class="tsm">${esc(b.mota)}</p></div></a>`;
+  // (31/07 Tuấn: "sao tôi không thấy video trên web") — video chỉ nằm trong 7/92 bài nên mở đại là không
+  // gặp. Gắn nhãn 🎙 lên thẻ bài + đưa hẳn một khối "Nghe podcast" lên đầu trang /cam-nang/.
+  const baiCard = b => { const pd = POD_THEO_BAI[b.slug];
+    return `<a class="card" href="/cam-nang/${b.slug}.html"><div class="ci"><p class="dim" style="margin:0 0 4px">${NHOM_TEN[b.nhom] || 'Cẩm nang'} · ${dV(b.pub)}${pd ? ` · <span class="pdtag">🎙 Podcast ${phutGiay(pd.giay)}</span>` : ''}</p><h3>${esc(b.title)}</h3><p class="tsm">${esc(b.mota)}</p></div></a>`; };
   let soPod = 0;
   for (const b of BAI) {
     const cung = BAI.filter(x => x.nhom === b.nhom && x.slug !== b.slug).slice(0, 3);
@@ -1287,6 +1295,16 @@ ${pod ? `<script>${jsPod()}</script>` : ''}`;
 <div class="chips">${nhoms.map(nh => `<a href="#${nh}">${NHOM_TEN[nh] || nh}</a>`).join('')}</div>
 ${noiBat ? `<a class="featured" href="/cam-nang/${noiBat.slug}.html"><span class="ctag">Bài nổi bật · ${NHOM_TEN[noiBat.nhom] || 'Cẩm nang'}</span><h2>${esc(noiBat.title)}</h2><p>${esc(noiBat.mota)}</p><span class="fmore">Đọc bài →</span></a>` : ''}
 <div class="cta"><p><b>Cần đáp án nhanh?</b> Xem <a href="/hoi-dap.html">Hỏi đáp — ${FAQ.length} câu khách hỏi Tuấn nhiều nhất</a>: cọc an toàn, tránh mua hớ, kiểm tra quy hoạch, sổ chung – vi bằng…</p></div>
+${(() => {   // khối NGHE PODCAST — bài nào có video thì gom lên đây cho khách thấy ngay
+  const coPod = BAI.filter(b => POD_THEO_BAI[b.slug]).map(b => POD_THEO_BAI[b.slug]).sort((a, b) => a.ep - b.ep);
+  if (!coPod.length) return '';
+  return `<h2 id="podcast">🎙 Nghe podcast "Chuyện nghề môi giới"</h2>
+<p class="lead">Tuấn kể bằng giọng nói, mỗi tập 3–4 phút, nghe lúc chạy xe cũng được. Bấm vào bài để nghe ngay trong trang.</p>
+<div class="grid">${coPod.map(p => {
+    const b = BAI.find(x => x.slug === p.slug);
+    return `<a class="card podcard" href="/cam-nang/${p.slug}.html"><div class="thumb"><img src="${p.anh}" alt="Podcast tập ${p.ep}: ${esc(p.ten)}" width="540" height="960" loading="lazy" decoding="async"><span class="podlen">${phutGiay(p.giay)}</span></div><div class="ci"><p class="dim" style="margin:0 0 4px">Tập ${p.ep} · ${NHOM_TEN[b.nhom] || 'Cẩm nang'}</p><h3>${esc(p.ten)}</h3><p class="tsm">${esc(p.mo)}</p></div></a>`;
+  }).join('')}</div>`;
+})()}
 ${nhoms.map(nh => `<h2 id="${nh}">${NHOM_TEN[nh] || nh}</h2><div class="grid">${BAI.filter(b => b.nhom === nh).map(baiCard).join('')}</div>`).join('\n')}`;
   W('cam-nang/index.html', page({ path: '/cam-nang/', title: `Cẩm nang mua bán nhà TP.HCM: pháp lý, đặt cọc, vay vốn, định giá | ${BRAND.name}`, desc: `${BAI.length} bài kinh nghiệm thực tế khi mua bán nhà phố TP.HCM: tránh mất cọc, kiểm tra quy hoạch, vay ngân hàng, thẩm định nhà, mặt bằng giá từng quận — viết bởi môi giới trực tiếp ${BRAND.name}.`, ld: [crumbLd([['Trang chủ', '/'], ['Cẩm nang', '/cam-nang/']])], body: idxBody, upDate: today }));
   console.log(`· Cẩm nang: đăng ${BAI.length} bài`);
