@@ -65,7 +65,7 @@ function duongOk(duong) {
 }
 function cleanRows(rows) {
   const out = [];
-  let drop = 0;
+  let drop = 0, dropGia = 0;
   const nowTs = Math.floor(Date.now() / 1000);
   for (const l of rows) {
     // (18/07 Tuấn bắt) Ngày TƯƠNG LAI = nguồn CĐMG ghi dd/mm bị parse mm/dd. Trước đây GHIM VỀ HÔM NAY -> căn
@@ -79,9 +79,15 @@ function cleanRows(rows) {
     }
     l.duong = DUONG_FIX[String(l.duong || '').trim()] || String(l.duong || '').trim();
     if (!duongOk(l.duong)) { drop++; continue; }
+    // (31/07 — Firecrawl soi trang chủ bắt được) Căn KHÔNG CÓ GIÁ (gia_ty<=0) đẻ ra tiêu đề "Hơn 0 tỷ" trên
+    // trang căn, VÀ vì mọi câu "giá từ ... tỷ" đều lấy Math.min nên CHỈ 1 căn hỏng là kéo mô tả trang chủ +
+    // ô khu vực + trang đường về "từ 0 tỷ". Khách đọc mất tin, Google lấy đúng câu đó hiện lên kết quả tìm.
+    // Căn không giá thì cũng chẳng bán được -> loại hẳn khỏi web (kho + bot vẫn giữ nguyên).
+    if (!(Number(l.gia_ty) > 0)) { dropGia++; continue; }
     out.push(l);
   }
   if (drop) console.log(`⚠ loại ${drop} căn tên đường cụt/trống (không đưa địa danh sai lên web)`);
+  if (dropGia) console.log(`⚠ loại ${dropGia} căn KHÔNG CÓ GIÁ (tránh "Hơn 0 tỷ" + kéo "giá từ" cả web về 0)`);
   return out;
 }
 
@@ -119,8 +125,12 @@ function motaNgan(l) {
 function statsOf(rows) {
   const gia = rows.map(l => l.gia_ty + 0.5); // gia_ty đã floor -> +0.5 ước trung tâm khoảng
   const ppm = rows.filter(l => l.dt > 0).map(l => (l.gia_ty + 0.5) / l.dt * 1000); // triệu/m²
-  return { n: rows.length, min: Math.min(...rows.map(l => l.gia_ty)), max: Math.max(...rows.map(l => l.gia_ty)), medGia: median(gia), medPpm: median(ppm) };
+  // LƯỚI ĐỠ (31/07): min BỎ QUA căn giá 0/trống — cleanRows đã loại rồi, nhưng đây là chỗ 1 căn hỏng
+  // kéo cả web thành "giá từ 0 tỷ", nên chặn thêm lần nữa cho chắc.
+  const gOk = rows.map(l => Number(l.gia_ty)).filter(g => g > 0);
+  return { n: rows.length, min: gOk.length ? Math.min(...gOk) : 0, max: Math.max(...rows.map(l => l.gia_ty)), medGia: median(gia), medPpm: median(ppm) };
 }
+const giaMin = rows => { const g = rows.map(l => Number(l.gia_ty)).filter(x => x > 0); return g.length ? Math.min(...g) : 0; };
 
 // ---------- khung trang ----------
 const NAV = [['/', 'Trang chủ'], ['/nha-dat/', '🔍 Tìm kiếm'], ['/khu-vuc/', 'Khu vực'], ['/duong/', 'Theo đường'], ['/cam-nang/', 'Cẩm nang'], ['/gioi-thieu.html', 'Giới thiệu']];   // Hỏi đáp gộp vào Cẩm nang trên menu (13/07) — trang /hoi-dap.html vẫn sống · 'Theo đường' lên menu 27/07: link footer là tín hiệu YẾU, menu chính mới cho Google biết /duong/ là nhánh cấu trúc (mobile nav cuộn ngang nên thêm mục an toàn)
@@ -689,7 +699,7 @@ const st = statsOf(ACT);
 <div class="grid">${newest.map(card).join('')}</div>
 <p><a href="/nha-dat/">Xem tất cả ${st.n} căn đang bán →</a></p>
 <h2>Tìm theo khu vực</h2>
-<div class="grid">${areasLive.filter(a => a.rows.length).map(a => `<a class="card" href="/khu-vuc/${a.slug}.html"><div class="ci"><h3>${esc(a.ten)}</h3><p class="tsm">nhà phố – biệt thự · từ ${num(Math.min(...a.rows.map(x => x.gia_ty)), 0)} tỷ</p></div></a>`).join('')}</div>
+<div class="grid">${areasLive.filter(a => a.rows.length).map(a => `<a class="card" href="/khu-vuc/${a.slug}.html"><div class="ci"><h3>${esc(a.ten)}</h3><p class="tsm">nhà phố – biệt thự · từ ${num(giaMin(a.rows), 0)} tỷ</p></div></a>`).join('')}</div>
 <h2>Khách hay hỏi</h2>
 ${faqHtml(FAQ.slice(0, 4))}
 <p><a href="/hoi-dap.html">Xem đủ ${FAQ.length} câu hỏi – đáp về mua bán nhà TP.HCM →</a></p>`;
