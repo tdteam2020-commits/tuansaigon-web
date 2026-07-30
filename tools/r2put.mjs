@@ -11,7 +11,7 @@ import { homedir } from 'node:os';
 const ENV_FILE = homedir() + '/.config/claude-bds/r2.env';
 if (!process.env.R2_ACCESS_KEY_ID && existsSync(ENV_FILE)) {
   for (const line of readFileSync(ENV_FILE, 'utf8').split('\n')) {
-    const m = line.match(/^\s*export\s+([A-Z0-9_]+)\s*=\s*(.+?)\s*$/);
+    const m = line.match(/^\s*(?:export\s+)?([A-Z0-9_]+)\s*=\s*(.+?)\s*$/);   // 'export' TUỲ CHỌN — file .env trên Windows không có nó
     if (m) process.env[m[1]] = m[2].replace(/^["']|["']$/g, '');
   }
 }

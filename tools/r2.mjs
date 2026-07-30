@@ -2,6 +2,20 @@
 // Nạp khoá: source ~/.config/claude-bds/r2.env  (KHÔNG hardcode khoá vào file này — file này nằm trong git).
 import { createHash, createHmac } from 'node:crypto';
 
+// 30/07: TỰ NẠP khoá từ ~/.config/claude-bds/r2.env (trước đây chỉ r2put nạp -> gọi trực tiếp r2.mjs
+// hoặc file .env không có chữ 'export' là chết; dính thật khi cài lên VPS Windows).
+try {
+  const { readFileSync, existsSync } = await import('node:fs');
+  const { homedir } = await import('node:os');
+  const f = homedir() + '/.config/claude-bds/r2.env';
+  if (!process.env.R2_ACCESS_KEY_ID && existsSync(f)) {
+    for (const line of readFileSync(f, 'utf8').split('\n')) {
+      const m = line.match(/^\s*(?:export\s+)?([A-Z0-9_]+)\s*=\s*(.+?)\s*$/);
+      if (m) process.env[m[1]] = m[2].trim().replace(/^["']|["']$/g, '');
+    }
+  }
+} catch (e) {}
+
 export const CFG = {
   account: process.env.R2_ACCOUNT_ID,
   endpoint: process.env.R2_ENDPOINT,
