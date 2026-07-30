@@ -133,7 +133,23 @@ function statsOf(rows) {
 const giaMin = rows => { const g = rows.map(l => Number(l.gia_ty)).filter(x => x > 0); return g.length ? Math.min(...g) : 0; };
 
 // ---------- khung trang ----------
-const NAV = [['/', 'Trang chủ'], ['/nha-dat/', '🔍 Tìm kiếm'], ['/khu-vuc/', 'Khu vực'], ['/duong/', 'Theo đường'], ['/cam-nang/', 'Cẩm nang'], ['/gioi-thieu.html', 'Giới thiệu']];   // Hỏi đáp gộp vào Cẩm nang trên menu (13/07) — trang /hoi-dap.html vẫn sống · 'Theo đường' lên menu 27/07: link footer là tín hiệu YẾU, menu chính mới cho Google biết /duong/ là nhánh cấu trúc (mobile nav cuộn ngang nên thêm mục an toàn)
+// MENU (31/07 Tuấn bắt: "Tìm kiếm - Khu vực - Theo đường gì cũng là tìm kiếm thôi, dính cục không hay",
+// + đòi đưa LIÊN HỆ lên menu). Gom 3 mục tìm vào 1 nhóm xổ xuống, thêm 📞 Liên hệ.
+// ⚠️ GIỮ NGUYÊN 3 link con trong menu chứ đừng bỏ xuống footer: link footer là tín hiệu YẾU, menu chính
+// mới cho Google biết /khu-vuc/ và /duong/ là nhánh cấu trúc (lý do 27/07 đưa lên). Nằm trong <details>
+// thì vẫn là thẻ <a> trong HTML mọi trang -> Google đọc đủ, khách thì đỡ rối.
+// Hỏi đáp gộp vào Cẩm nang trên menu (13/07) — trang /hoi-dap.html vẫn sống.
+const NAV = [
+  ['/', 'Trang chủ'],
+  ['/nha-dat/', '🔍 Tìm nhà', [
+    ['/nha-dat/', 'Tất cả nhà đang bán'],
+    ['/khu-vuc/', 'Theo khu vực'],
+    ['/duong/', 'Theo tên đường'],
+  ]],
+  ['/cam-nang/', 'Cẩm nang'],
+  ['/gioi-thieu.html', 'Giới thiệu'],
+  ['/lien-he.html', '📞 Liên hệ'],
+];
 const PHONE_FMT = '0777 088 622';
 const ZALO = `https://zalo.me/${BRAND.phone}`;
 const AVA = existsSync(join(ROOT, 'assets', 'tuan.jpg')) ? '/anh/tuan.jpg' : null; // ảnh đại diện Tuấn (website/assets/tuan.jpg)
@@ -177,7 +193,13 @@ ${preloadImg ? `<link rel="preload" as="image" href="${preloadImg}" type="image/
 <body>
 <header class="top"><div class="wrap bar">
 <a class="logo" href="/"><img src="/anh/logo-64.png" alt="Logo Tuấn Sài Gòn" width="36" height="36">Tuấn <span>Sài Gòn</span></a>
-<nav>${NAV.map(([h, t]) => `<a href="${h}"${h === path || (h !== '/' && path.startsWith(h)) ? ' class="on"' : ''}>${t}</a>`).join('')}</nav>
+<nav>${NAV.map(([h, t, con]) => {
+  const dangO = u => u === path || (u !== '/' && path.startsWith(u));
+  if (!con) return `<a href="${h}"${dangO(h) ? ' class="on"' : ''}>${t}</a>`;
+  // KHÔNG tự mở sẵn khi đang ở trang con — mở sẵn là bảng xổ che nội dung ngay lúc vào trang.
+  return `<details class="dd"><summary${con.some(([u]) => dangO(u)) ? ' class="on"' : ''}>${t}</summary><div>${
+    con.map(([u, tc]) => `<a href="${u}"${dangO(u) ? ' class="on"' : ''}>${tc}</a>`).join('')}</div></details>`;
+}).join('')}</nav>
 <a class="call" href="tel:${BRAND.phone}">📞 Gọi ngay<span class="tel"> · ${PHONE_FMT}</span></a>
 </div></header>
 <main class="wrap">
@@ -195,6 +217,9 @@ ${body}
 (function(){if(!('IntersectionObserver' in window))return;
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.08});
 document.querySelectorAll('.card,.stat,.qa,article h2').forEach(function(el,i){el.classList.add('reveal');el.style.transitionDelay=Math.min(i%6*70,350)+'ms';io.observe(el)});})();
+/* bấm ra ngoài thì đóng nhóm "Tìm nhà" (details tự nó chỉ đóng khi bấm lại đúng chữ) */
+document.addEventListener('click',function(e){
+Array.prototype.forEach.call(document.querySelectorAll('details.dd[open]'),function(d){if(!d.contains(e.target))d.removeAttribute('open')})});
 </script>
 </body>
 </html>`;
@@ -561,7 +586,20 @@ html{overflow-x:clip}
 .logo{font-size:1.2rem;font-weight:700;color:#f1ead9;text-decoration:none;letter-spacing:.2px}.logo span{color:var(--vang)}
 .top nav{display:flex;gap:4px;flex-wrap:wrap;flex:1;justify-content:flex-end;margin-right:6px}
 .top nav a{color:#c9c0aa;text-decoration:none;padding:7px 12px;border-radius:8px;font-size:.95rem;font-weight:500}
-.top nav a.on{color:var(--vang);font-weight:600}.top nav a:hover{background:rgba(255,255,255,.08);color:#f1ead9}
+.top nav a.on{color:var(--vang);font-weight:600}
+/* Nhóm "Tìm nhà" xổ xuống — dùng <details> nên KHÔNG cần JS mới mở được (JS chỉ để bấm ra ngoài thì đóng) */
+.dd{position:relative}
+.dd>summary{list-style:none;cursor:pointer;color:#c9c0aa;padding:7px 12px;border-radius:8px;font-size:.95rem;font-weight:500;user-select:none;white-space:nowrap}
+.dd>summary::-webkit-details-marker{display:none}
+.dd>summary::marker{content:""}
+.dd>summary:after{content:" ▾";font-size:.78em;opacity:.7}
+.dd>summary:hover{background:rgba(255,255,255,.08);color:#f1ead9}
+.dd>summary.on{color:var(--vang);font-weight:600}
+.dd[open]>summary{background:rgba(255,255,255,.12);color:#f1ead9}
+.dd>div{position:absolute;right:0;top:calc(100% + 7px);min-width:212px;background:#fff;border:1px solid var(--vien);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.24);padding:6px;z-index:20;display:flex;flex-direction:column}
+.dd>div a{color:var(--chu);padding:9px 12px;border-radius:8px;font-size:.93rem;white-space:nowrap}
+.dd>div a:hover{background:#faf6ee;color:var(--chinh)}
+.dd>div a.on{color:var(--chinh);font-weight:600;background:#faf6ee}.top nav a:hover{background:rgba(255,255,255,.08);color:#f1ead9}
 .call{border:1px solid var(--vang);color:var(--vang);font-weight:700;text-decoration:none;padding:9px 18px;border-radius:8px;white-space:nowrap}
 .call:hover{background:rgba(217,179,106,.12)}
 main{padding:30px 20px 48px}
@@ -743,6 +781,12 @@ main{padding:18px 13px 40px}
 .top nav{order:3;flex:0 0 100%;width:100%;min-width:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;gap:0;margin:0 -12px;padding:0 8px}
 .top nav::-webkit-scrollbar{display:none}
 .top nav a{white-space:nowrap;font-size:.88rem;padding:6px 9px}
+.dd>summary{font-size:.88rem;padding:6px 9px}
+/* Điện thoại: nav xuống dòng nên nhóm "Tìm nhà" nằm lệch trái -> bảng neo right:0 TRÀN RA NGOÀI màn
+   hình (đo được left:-97px trên iPhone). Bỏ mốc neo ở .dd để bảng bám vào header (.top position:sticky)
+   và trải ngang cả bề rộng. */
+.dd{position:static}
+.dd>div{left:12px;right:12px;top:100%;min-width:0;margin-top:4px}
 h1{font-size:1.42rem}h2{font-size:1.18rem;margin:26px 0 10px}
 .lead{font-size:.98rem}
 .hero{margin:0 -13px 20px;padding:28px 16px 30px}
