@@ -6,6 +6,14 @@
 //            node tools/ngu-khi-xong.mjs 5 8      (yên 5 phút mới ngủ · canh tối đa 8 tiếng)
 // DỪNG:      pkill -f ngu-khi-xong
 import { execSync } from 'node:child_process';
+import { homedir } from 'node:os';
+import { readFileSync } from 'node:fs';
+
+const KEY = (() => {   // khoá GAS đọc từ file config (khoá cũ từng nằm CÔNG KHAI trong repo GitHub)
+  const _f = homedir() + '/.config/claude-bds/gas.env';
+  try { return (readFileSync(_f, 'utf8').match(/GAS_KEY[^"]*"([^"]+)"/) || [])[1].trim(); }
+  catch (e) { console.error('Thieu khoa - tao ' + _f + ' voi dong: GAS_KEY="..."'); process.exit(1); }
+})();
 
 const YEN_PHUT = parseFloat(process.argv[2] || '3');
 const TRAN_GIO = parseFloat(process.argv[3] || '6');

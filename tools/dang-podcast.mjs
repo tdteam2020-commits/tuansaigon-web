@@ -3,6 +3,13 @@
 // Chạy: source ~/.config/claude-bds/r2.env && node tools/dang-podcast.mjs <N>
 import { readFileSync } from 'node:fs';
 import { put } from './r2.mjs';
+import { homedir } from 'node:os';
+
+const KEY = (() => {   // khoá GAS đọc từ file config (khoá cũ từng nằm CÔNG KHAI trong repo GitHub)
+  const _f = homedir() + '/.config/claude-bds/gas.env';
+  try { return (readFileSync(_f, 'utf8').match(/GAS_KEY[^"]*"([^"]+)"/) || [])[1].trim(); }
+  catch (e) { console.error('Thieu khoa - tao ' + _f + ' voi dong: GAS_KEY="..."'); process.exit(1); }
+})();
 
 const HOOK = 'https://hook.eu1.make.com/svx4c0kp22jnbjafg8796niw3vj2aabv';
 const GAS = 'https://script.google.com/macros/s/AKfycbz33hU71TC2nj4p1MnISJ3LP83lGYXn_xSFu5RTY6zjiBF9piY2mZl0o6gQjQ5w31Gowg/exec';
