@@ -372,7 +372,9 @@ f.addEventListener('submit',function(e){e.preventDefault();
 var ten=f.ten.value.trim(),sdt=f.sdt.value.trim();
 if(!ten||soChuSo(sdt)<8){lo.hidden=false;return}
 lo.hidden=true;
-var q='action=lienhe&ten='+encodeURIComponent(ten)+'&sdt='+encodeURIComponent(sdt)+'&nd='+encodeURIComponent(f.nd.value)+'&hp='+encodeURIComponent(f.hp.value);
+/* gửi kèm trang khách đang đứng + nơi khách tới từ (Google/Facebook/Threads...) -> sổ khách biết nguồn */
+var tu=location.pathname;try{if(document.referrer&&document.referrer.indexOf(location.hostname)<0)tu+=' ⟵ '+document.referrer.split('/')[2]}catch(eR){}
+var q='action=lienhe&ten='+encodeURIComponent(ten)+'&sdt='+encodeURIComponent(sdt)+'&nd='+encodeURIComponent(f.nd.value)+'&hp='+encodeURIComponent(f.hp.value)+'&tu='+encodeURIComponent(tu);
 fetch('${GAS}?'+q).catch(function(){});
 kq.hidden=false;f.querySelector('button').disabled=true;});})();`;
   try { new Function(js); } catch (e) { throw new Error('❌ SCRIPT FORM LIÊN HỆ HỎNG CÚ PHÁP -> DỪNG BUILD: ' + e.message); }
