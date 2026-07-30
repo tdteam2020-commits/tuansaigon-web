@@ -301,35 +301,35 @@ const PODCAST = [
   { ep: 1, slug: 'dat-coc-mua-nha-sao-cho-khong-mat-tien', yt: '-GnNMYhyvtI', giay: 185, pub: '2026-07-20',
     ten: 'Đặt cọc mua nhà sao cho AN TOÀN? 5 điều giữ tiền',
     mo: 'Quét mã QR kiểm tra sổ thật, xác minh đúng chủ, hợp đồng cọc có phạt cọc (Điều 328 Bộ luật Dân sự 2015), cọc 5–10%, tra ngăn chặn trước khi ký.',
-    anh: 'https://anh.tuansaigon.com/a/af645b75ebd6167227854ee354f803d7725b8646.jpg' },
+    anh: 'https://anh.tuansaigon.com/a/7a0c09118dacc828903e5d1dd04b5d8023590cb1.jpg' },
   { ep: 2, slug: 'vay-ngan-hang-mua-nha-can-biet', yt: 'znC8j5gphpQ', giay: 236, pub: '2026-07-21',
     ten: 'Vay ngân hàng mua nhà — 5 điều PHẢI biết trước khi ký',
     mo: 'Khoản trả mỗi tháng bao nhiêu là vừa sức, lãi thả nổi sau ưu đãi, phí phạt trả trước hạn và những chỗ hồ sơ hay rớt.',
-    anh: 'https://anh.tuansaigon.com/a/bfb241f7569c45e9d4cefb72b728646564c949da.jpg' },
+    anh: 'https://anh.tuansaigon.com/a/ee6d79b74fdd18956d886069288c5b270ec0dce1.jpg' },
   { ep: 3, slug: 'mua-nha-dang-the-chap-ngan-hang', yt: 'bG_crEcQdKs', giay: 180, pub: '2026-07-22',
     ten: 'Mua nhà đang thế chấp ngân hàng — làm sao cho an toàn',
     mo: 'Nhà đang cắm ngân hàng vẫn mua được, miễn làm đúng thứ tự giải chấp và ràng buộc rõ trong hợp đồng cọc.',
-    anh: 'https://anh.tuansaigon.com/a/eaf0ac38ee74a079c42b1a361515301255e3096d.jpg' },
+    anh: 'https://anh.tuansaigon.com/a/61a406aaecf6dc87e147e5c4c8a28c549ac69469.jpg' },
   { ep: 4, slug: 'thue-phi-khi-mua-ban-nha', yt: 'XndekITyeT8', giay: 167, pub: '2026-07-23',
     ten: 'Thuế phí mua bán nhà 2026 — ai trả khoản nào',
     mo: 'Thuế thu nhập, lệ phí trước bạ, phí công chứng — khoản nào của bên bán, khoản nào bên mua, và chỗ hay cãi nhau lúc ra công chứng.',
-    anh: 'https://anh.tuansaigon.com/a/f96af97c56c1cc8a222ee13f076c8b2bdbf07fd2.jpg' },
+    anh: 'https://anh.tuansaigon.com/a/e5aab965aeac6b039597eda7706a8dba64e1ee92.jpg' },
   { ep: 5, slug: 'dan-xep-lich-xem-nha-hieu-qua', yt: 'RhljAOcbHkQ', giay: 180, pub: '2026-07-26',
     ten: 'Đi xem nhà — nhìn gì, hỏi gì để khỏi hớ',
     mo: 'Thứ tự xem nhà cho hiệu quả, những chỗ chủ hay giấu, và câu hỏi nên đặt ngay tại chỗ.',
-    anh: 'https://anh.tuansaigon.com/a/b44e0cbd810176615ce14c651632df1fa8556ab9.jpg' },
+    anh: 'https://anh.tuansaigon.com/a/5ded7c7d22d36522049b567cdc0b27fb9e604f53.jpg' },
   { ep: 6, slug: 'kiem-tra-quy-hoach-truoc-khi-mua-nha', yt: 'ZZHspRFl2hU', giay: 256, pub: '2026-07-28',
     ten: 'Quy hoạch và lộ giới — kiểm thế nào trước khi xuống cọc',
     mo: 'Cầm số tờ số thửa đi tra ở đâu, nhìn ra nhà có dính ranh dự án hay lộ giới cắt vào bao nhiêu mét.',
-    anh: 'https://anh.tuansaigon.com/a/ca4dd4d750e774f3bd8b94c076238552785255ce.jpg' },
+    anh: 'https://anh.tuansaigon.com/a/df138502802c6fcd455d600a15110bbd9342af44.jpg' },
   { ep: 7, slug: 'no-xau-co-vay-mua-nha-duoc-khong', yt: 'BMT4HqtRYro', giay: 270, pub: '2026-07-28',
     ten: 'Nợ xấu CIC — còn vay mua nhà được không',
     mo: 'Nợ xấu nhóm mấy thì hết cửa, bao lâu mới sạch hồ sơ, và cách kiểm tra CIC của chính mình trước khi nộp vay.',
-    anh: 'https://anh.tuansaigon.com/a/371a97e1b6db1b5ce7f1d3699558d54c9c9edf13.jpg' },
+    anh: 'https://anh.tuansaigon.com/a/9ae9ac4ac93e5449dccbeeeb3d7e95ae872595ef.jpg' },
   { ep: 8, slug: 'khai-thue-khi-ban-nha-tranh-bi-phat', yt: '9gfH0yNwN1k', giay: 251, pub: '2026-07-30',
     ten: 'Miễn thuế khi bán nhà duy nhất 2026 — điều kiện thật',
     mo: 'Điều kiện để được miễn thuế thu nhập khi bán căn nhà duy nhất, và những trường hợp tưởng được miễn mà không.',
-    anh: 'https://anh.tuansaigon.com/a/7a04000b0b4c974dd66ac28ac2d1c5b7099c02b8.jpg' },
+    anh: 'https://anh.tuansaigon.com/a/2054202ab09df332da30dc4e643773a3e677756f.jpg' },
 ];
 const POD_THEO_BAI = {}; PODCAST.forEach(p => { POD_THEO_BAI[p.slug] = p; });
 const phutGiay = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
@@ -337,7 +337,7 @@ const isoThoiLuong = s => 'PT' + (s >= 60 ? Math.floor(s / 60) + 'M' : '') + (s 
 function podKhoi(p) {
   return `<figure class="pod">
 <button class="podbtn" type="button" data-yt="${p.yt}" aria-label="Phát podcast: ${esc(p.ten)}">
-<img src="${p.anh}" alt="Podcast tập ${p.ep}: ${esc(p.ten)} — Tuấn Sài Gòn" width="800" height="450" loading="lazy" decoding="async">
+<img src="${p.anh}" alt="Podcast tập ${p.ep}: ${esc(p.ten)} — Tuấn Sài Gòn" width="540" height="960" loading="lazy" decoding="async">
 <span class="podplay" aria-hidden="true"></span><span class="podlen">${phutGiay(p.giay)}</span></button>
 <figcaption>🎙 <b>Nghe Tuấn kể tập ${p.ep}</b> — ${esc(p.ten)}. Bấm để xem tại chỗ, hoặc <a href="https://www.youtube.com/watch?v=${p.yt}" target="_blank" rel="noopener">mở trên YouTube</a>.</figcaption>
 </figure>`;
@@ -624,12 +624,16 @@ h2{font-size:1.55rem;margin:34px 0 14px;color:var(--chu)}
 /* Phân trang khu vực (15/07) — nút to đủ bấm bằng ngón cái trên mobile (44px), tự xuống dòng khi nhiều trang */
 /* PODCAST nhúng bài cẩm nang (31/07): khung 16/9 dựng SẴN nên trang không giật khi ảnh bìa về.
    Chỉ là ảnh + nút play CSS; bấm mới thay bằng iframe YouTube thật. */
-.pod{margin:20px 0 24px}
-.pod .podbtn,.pod iframe{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#1a1013}
+/* Podcast quay DỌC 1080×1920 -> khung 9/16. Chặn bề ngang 320px + căn giữa để khối không
+   chiếm hết bài đọc (khung 320px cao 569px, vừa một màn điện thoại). */
+.pod{margin:20px auto 24px;max-width:320px}
+.pod .podbtn,.pod iframe{display:block;width:100%;aspect-ratio:9/16;border:0;border-radius:14px;background:#1a1013}
 .pod .podbtn{position:relative;padding:0;cursor:pointer;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.14)}
 .pod .podbtn img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}
 .pod .podbtn:hover img{transform:scale(1.03)}
-.pod .podplay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62px;height:44px;border-radius:11px;background:rgba(20,10,12,.72);border:1px solid rgba(255,255,255,.25)}
+/* Nút play đặt ở 84% chiều cao: khung dọc có THẺ TIÊU ĐỀ ở giữa và PHỤ ĐỀ ngay dưới — để 50% hay 68%
+   là đè mất chữ. Vùng 84% là cảnh nền, tập nào cũng trống. */
+.pod .podplay{position:absolute;left:50%;top:84%;transform:translate(-50%,-50%);width:62px;height:44px;border-radius:11px;background:rgba(20,10,12,.72);border:1px solid rgba(255,255,255,.25)}
 .pod .podplay:after{content:"";position:absolute;left:25px;top:13px;border-style:solid;border-width:9px 0 9px 15px;border-color:transparent transparent transparent #fff}
 .pod .podbtn:hover .podplay{background:var(--chinh)}
 .pod .podlen{position:absolute;right:9px;bottom:9px;background:rgba(0,0,0,.78);color:#fff;font-size:.78rem;font-weight:600;padding:2px 7px;border-radius:5px}
