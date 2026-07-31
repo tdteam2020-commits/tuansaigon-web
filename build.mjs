@@ -355,6 +355,14 @@ const PODCAST = [
     ten: 'Miễn thuế khi bán nhà duy nhất 2026 — điều kiện thật',
     mo: 'Điều kiện để được miễn thuế thu nhập khi bán căn nhà duy nhất, và những trường hợp tưởng được miễn mà không.',
     anh: 'https://anh.tuansaigon.com/a/2054202ab09df332da30dc4e643773a3e677756f.jpg' },
+  { ep: 9, slug: 'dinh-gia-nha-minh-truoc-khi-ban', yt: 'sfoSXjtSGTU', giay: 250, pub: '2026-07-31',
+    ten: 'Định giá nhà — vì sao 2 căn cạnh nhau chênh cả tỷ',
+    mo: 'Khung định giá dân trong nghề dùng: quy về đơn giá đất mỗi m², so đúng nhóm mặt tiền – hẻm xe hơi – hẻm nhỏ, và các yếu tố phải trừ giá.',
+    anh: 'https://anh.tuansaigon.com/a/1330b4413774abc50d6625ef5a94f5033608285f.jpg' },
+  { ep: 10, slug: 'mua-nha-vi-bang-rui-ro', yt: '1js5urjvAx0', giay: 287, pub: '2026-07-31',
+    ten: 'Nhà vi bằng, giấy tay — rẻ phân nửa, có nên mua',
+    mo: 'Vi bằng chỉ chứng minh đã đưa tiền, không chứng minh là chủ nhà (Nghị định 08/2020). Giấy tay dễ bị tuyên vô hiệu — và nếu lỡ mua rồi thì làm gì.',
+    anh: 'https://anh.tuansaigon.com/a/2f79cfdf7dff2b2122622be1f080ab4779ca9441.jpg' },
 ];
 const POD_THEO_BAI = {}; PODCAST.forEach(p => { POD_THEO_BAI[p.slug] = p; });
 const phutGiay = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
