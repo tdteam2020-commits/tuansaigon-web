@@ -43,13 +43,45 @@ function updMin(s) {
 }
 
 // ---- 1. xin cấu hình từ GAS (1 call) ----
-const cfg = await (await rfetch(`${GAS}?action=cdmgcfg&key=${KEY}`)).json();
+// (2/8) TỰ ĐĂNG NHẬP: Cloudflare CĐMG đã chặn dải IP Google -> login_() trong GAS ném "Address unavailable".
+// Máy này (VPS Việt Nam / máy Tuấn) vào CĐMG bình thường, nên XIN VẬT LIỆU rồi TỰ đăng nhập, khỏi nhờ GAS.
+// `&self=1` khiến GAS bỏ qua bước login, chỉ trả email/pass/device/ua.
+const cfg = await (await rfetch(`${GAS}?action=cdmgcfg&key=${KEY}&self=1`)).json();
 if (!cfg.ok) { log('cdmgcfg lỗi:', cfg.error); process.exit(1); }
 const daCoAnh = new Set(cfg.da_co.map(String));   // căn đã có ảnh -> khỏi tải thumb lại (vẫn gửi snapshot)
 log(`cfg: ${cfg.areas.length} khu · ${daCoAnh.size} căn đã có ảnh (khỏi tải lại thumb)`);
+
+// đọc 1 cookie trong Set-Cookie (port ckVal_ bên GAS)
+function ckVal(res, ten) {
+  const sc = res.headers.getSetCookie ? res.headers.getSetCookie() : [res.headers.get('set-cookie') || ''];
+  for (const d of sc) { const m = String(d).match(new RegExp(ten + '=([^;]+)')); if (m) return m[1]; }
+  return '';
+}
+// Đăng nhập CĐMG y hệt login_() bên GAS: lấy csrf + ci_session khách -> POST /api/login/verify -> ghép cookie.
+async function dangNhap(dn) {
+  const r1 = await rfetch(`${BASE}/login`, { redirect: 'manual', headers: { 'User-Agent': dn.ua, 'Accept-Language': 'vi-VN,vi;q=0.9' } });
+  const csrf = ((await r1.text()).match(/name="ci_csrf_token" value="([a-f0-9]+)"/) || [])[1] || '';
+  const guest = ckVal(r1, 'ci_session');
+  const body = new URLSearchParams({ username: dn.email, password: dn.pass, ci_csrf_token: csrf, remember: '1', token: '', deviceToken: dn.device });
+  const r2 = await rfetch(`${BASE}/api/login/verify`, { method: 'POST', redirect: 'manual',
+    headers: { 'User-Agent': dn.ua, 'Accept-Language': 'vi-VN,vi;q=0.9', 'X-Requested-With': 'XMLHttpRequest',
+      'Origin': BASE, 'Referer': `${BASE}/login`, 'Cookie': 'ci_session=' + guest,
+      'Content-Type': 'application/x-www-form-urlencoded' }, body });
+  const sess = ckVal(r2, 'ci_session'), jwt = ckVal(r2, 'token');
+  if (!sess || !jwt) throw new Error('đăng nhập CĐMG không lấy được phiên (csrf=' + (csrf ? 'có' : 'THIẾU') + ')');
+  return `ci_session=${sess}; logged_in=1; token=${jwt}; deviceToken=${dn.device}; teka_city_code=79`;
+}
+
+let COOKIE = cfg.cookie || '';
+if (!COOKIE) {
+  if (!cfg.dn) { log('GAS không đưa vật liệu đăng nhập — cần deploy bản GAS mới (cdmgcfg&self=1)'); process.exit(1); }
+  COOKIE = await dangNhap(cfg.dn);
+  log('đã TỰ đăng nhập CĐMG (không qua GAS) ✅');
+}
+
 const H = {
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/149.0.0.0 Safari/537.36',
-  'X-Requested-With': 'XMLHttpRequest', 'Referer': `${BASE}/NhaPho`, 'Cookie': cfg.cookie,
+  'User-Agent': (cfg.dn && cfg.dn.ua) || 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/149.0.0.0 Safari/537.36',
+  'X-Requested-With': 'XMLHttpRequest', 'Referer': `${BASE}/NhaPho`, 'Cookie': COOKIE,
   'Accept': 'text/html,application/xhtml+xml,*/*;q=0.8', 'Accept-Language': 'vi-VN,vi;q=0.9',
 };
 
@@ -110,7 +142,7 @@ async function crawlKhu(area) {
 // ---- 3. tải thumb + upload cloudinary ----
 async function grab(c) {
   try {
-    const r = await rfetch(c.thumb, { headers: { Referer: `${BASE}/NhaPho`, 'User-Agent': H['User-Agent'], Cookie: cfg.cookie } });
+    const r = await rfetch(c.thumb, { headers: { Referer: `${BASE}/NhaPho`, 'User-Agent': H['User-Agent'], Cookie: COOKIE } });
     if (r.status !== 200) return null;
     const buf = Buffer.from(await r.arrayBuffer());
     if (buf.length < 3000) return null;
