@@ -28,11 +28,47 @@ const now = () => new Date().toLocaleTimeString('vi-VN');
 const log = (...a) => console.log(`[${now()}]`, ...a);
 async function rfetch(u, o, t = 3) { for (let i = 0; i < t; i++) { try { return await fetch(u, o); } catch (e) { if (i === t - 1) throw e; await sleep(1500 * (i + 1)); } } }
 
+// ---- TỰ KÊU KHI CHẾT (3/8): chạy trên VPS lúc 22h, hỏng là không ai hay tới sáng.
+// Trước đây chết câm đúng 1 đêm (2/8) vì GAS không login được CĐMG — giờ nhắn Telegram ngay.
+async function chet(tin, ma = 1) {
+  log('🛑 ' + tin);
+  try { await rfetch(`${GAS}?action=pingmain&key=${KEY}&text=${encodeURIComponent('🛑 QUÉT SĐT ĐÊM DỪNG: ' + tin)}`); } catch (e) {}
+  process.exit(ma);
+}
+
 // ---- cfg + hàng đợi (chỉ căn cập nhật từ 2025 trở lại — Tuấn chốt 20/07; đổi: đối số 4 = năm) ----
+// ⚠️ &self=1 (3/8): GAS KHÔNG đăng nhập CĐMG hộ nữa — Cloudflare chặn dải IP Google, login_() bên GAS
+// ném "Address unavailable" và kéo chết luôn máy quét trên VPS dù VPS vào CĐMG bình thường.
+// GAS chỉ đưa hàng đợi + vật liệu đăng nhập; cookie do CHÍNH máy này lấy.
 const SINCE = parseInt(process.argv[4] || '2025', 10);
-const cfg = await (await rfetch(`${GAS}?action=sdtqueue&key=${KEY}&since=${SINCE}`)).json();
-if (!cfg.ok) { log('sdtqueue lỗi:', cfg.error); process.exit(1); }
+const cfg = await (await rfetch(`${GAS}?action=sdtqueue&key=${KEY}&since=${SINCE}&self=1`)).json();
+if (!cfg.ok) await chet('GAS sdtqueue lỗi: ' + cfg.error);
 if (cfg.bo_cu) log(`lọc năm: bỏ ${cfg.bo_cu} căn cập nhật trước ${SINCE} (chỉ giữ căn còn "chăm")`);
+
+// ---- tự đăng nhập CĐMG (y hệt login_() bên GAS): csrf + ci_session khách -> /api/login/verify ----
+function ckVal(res, ten) {
+  const sc = res.headers.getSetCookie ? res.headers.getSetCookie() : [res.headers.get('set-cookie') || ''];
+  for (const d of sc) { const m = String(d).match(new RegExp(ten + '=([^;]+)')); if (m) return m[1]; }
+  return '';
+}
+async function dangNhap(dn) {
+  const r1 = await rfetch(`${BASE}/login`, { redirect: 'manual', headers: { 'User-Agent': dn.ua, 'Accept-Language': 'vi-VN,vi;q=0.9' } });
+  const csrf = ((await r1.text()).match(/name="ci_csrf_token" value="([a-f0-9]+)"/) || [])[1] || '';
+  const guest = ckVal(r1, 'ci_session');
+  const body = new URLSearchParams({ username: dn.email, password: dn.pass, ci_csrf_token: csrf, remember: '1', token: '', deviceToken: dn.device });
+  const r2 = await rfetch(`${BASE}/api/login/verify`, { method: 'POST', redirect: 'manual',
+    headers: { 'User-Agent': dn.ua, 'Accept-Language': 'vi-VN,vi;q=0.9', 'X-Requested-With': 'XMLHttpRequest',
+      'Origin': BASE, 'Referer': `${BASE}/login`, 'Cookie': 'ci_session=' + guest,
+      'Content-Type': 'application/x-www-form-urlencoded' }, body });
+  const sess = ckVal(r2, 'ci_session'), jwt = ckVal(r2, 'token');
+  if (!sess || !jwt) throw new Error('không lấy được phiên (csrf=' + (csrf ? 'có' : 'THIẾU') + ')');
+  return { cookie: `ci_session=${sess}; logged_in=1; token=${jwt}; deviceToken=${dn.device}; teka_city_code=79`, jwt };
+}
+if (!cfg.cookie) {
+  if (!cfg.dn) await chet('GAS chưa đưa vật liệu đăng nhập — cần deploy bản GAS có sdtqueue&self=1');
+  try { const dn = await dangNhap(cfg.dn); cfg.cookie = dn.cookie; cfg.jwt = dn.jwt; log('đã TỰ đăng nhập CĐMG (không qua GAS) ✅'); }
+  catch (e) { await chet('tự đăng nhập CĐMG hỏng: ' + String(e).slice(0, 120)); }
+}
 
 // ---- ƯU TIÊN QUẬN (Tuấn chốt 17/07): Phú Nhuận → Q3 → Tân Bình P.1-5 → Q1 → Q10 → Bình Thạnh → còn lại ----
 // Trong mỗi bậc GIỮ thứ tự cũ (giá cao trước). Địa chỉ dạng "<đường>, P. <n>, <quận>".
@@ -57,7 +93,8 @@ const tenBac = { 1: 'Phú Nhuận', 2: 'Q3', 3: 'Tân Bình P1-5', 4: 'Q1', 5: '
 log('ưu tiên quận: ' + [1, 2, 3, 4, 5, 6, 7].filter(r => bac[r]).map(r => `${tenBac[r]} ${bac[r]}`).join(' · '));
 
 log(`hàng đợi: ${cfg.tong_cho} căn CĐMG trên web chưa có SĐT · phiên này lấy tối đa ${TEST ? 1 : CAP}`);
-const H = { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/149.0.0.0 Safari/537.36',
+// UA phải KHỚP lúc đăng nhập, kẻo site thấy phiên "đổi máy" giữa chừng
+const H = { 'User-Agent': (cfg.dn && cfg.dn.ua) || 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/149.0.0.0 Safari/537.36',
   'Accept-Language': 'vi-VN,vi;q=0.9', 'X-Requested-With': 'XMLHttpRequest',
   'Origin': BASE, 'Referer': `${BASE}/NhaPho`, 'Cookie': cfg.cookie,
   'Content-Type': 'application/x-www-form-urlencoded' };
