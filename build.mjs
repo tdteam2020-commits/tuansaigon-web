@@ -872,7 +872,9 @@ const st = statsOf(ACT);
 <h1>Nhà phố – biệt thự khu trung tâm TP.HCM</h1>
 <p>Hơn 5 năm đồng hành cùng người mua nhà phố Sài Gòn. Không ồn ào — không phô trương, chỉ giá trị thật. Hỗ trợ vay thế chấp, đo vẽ cấp đổi sổ, thừa kế, hoàn công…</p>
 <div class="btns"><a class="btn gold" href="tel:${BRAND.phone}">📞 Gọi Tuấn ngay · ${PHONE_FMT}</a><a class="btn zalo" href="${ZALO}" target="_blank" rel="noopener">Nhắn Zalo tư vấn</a></div>
-<div class="heroCount">${st.n} căn đang bán · cập nhật ${today}</div>
+${/* (2/8 Tuấn chốt) ẨN dòng "N căn đang bán · cập nhật ngày" ở đầu trang chủ.
+      Đừng khoe số lượng kho — đối thủ soi được quy mô, mà khách cũng không mua vì con số đó.
+      Vẫn GIỮ số trong mô tả SEO + trang /nha-dat/ (chỗ đó là tín hiệu tốt cho Google). */''}
 </div>${AVA ? `<div class="heroWrap"><picture>${AVAW ? `<source srcset="${AVAW}" type="image/webp">` : ''}<img class="heroPic" src="${AVA}" alt="Tuấn — Tuấn Sài Gòn, môi giới nhà phố, biệt thự trung tâm TP.HCM" width="340" height="400" fetchpriority="high"></picture><div class="heroCard"><b>Tuấn Sài Gòn</b><span>Hơn 5 năm · khu trung tâm · ${PHONE_FMT}</span></div></div>` : ''}</div></div>
 <div class="chips">${areasLive.filter(a => a.rows.length).map(a => `<a href="/khu-vuc/${a.slug}.html">${esc(a.quan)}</a>`).join('')}</div>
 <h2>Nhà mới cập nhật</h2>
