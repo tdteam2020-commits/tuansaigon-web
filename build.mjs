@@ -791,7 +791,11 @@ main{padding:18px 13px 40px}
 .logo{font-size:1.15rem;flex:none}.logo img{width:30px;height:30px}
 .call{padding:7px 12px;font-size:.85rem;margin-left:auto}
 .call .tel{display:none}
-.top nav{order:3;flex:0 0 100%;width:100%;min-width:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;gap:0;margin:0 -12px;padding:0 8px}
+/* ⚠️ 6/8: KHÔNG được để overflow trên thanh nav. Bảng xổ của "🔍 Tìm nhà" là position:absolute,
+   nằm NGOÀI chiều cao nav (nav cao 36px, bảng bắt đầu ở 105px) -> overflow-x:auto biến nav thành
+   khung cuộn và CẮT SẠCH bảng: bấm vào thấy y như nút chết. Tuấn bắt lỗi trên điện thoại 6/8.
+   Menu chỉ 5 mục nên cho XUỐNG DÒNG là đủ, khỏi cần cuộn ngang. */
+.top nav{order:3;flex:0 0 100%;width:100%;min-width:0;flex-wrap:wrap;gap:0;margin:0 -12px;padding:0 8px}
 .top nav::-webkit-scrollbar{display:none}
 .top nav a{white-space:nowrap;font-size:.88rem;padding:6px 9px}
 .dd>summary{font-size:.88rem;padding:6px 9px}
