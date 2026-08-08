@@ -100,8 +100,11 @@ const H = { 'User-Agent': (cfg.dn && cfg.dn.ua) || 'Mozilla/5.0 (Macintosh; Inte
   'Content-Type': 'application/x-www-form-urlencoded' };
 const jsonMsg = t => { try { const o = JSON.parse(t); return o && o.message ? o.message : t; } catch (e) { return t; } };
 const clean = s => (s || '').replace(/\s+/g, ' ').trim();
-// đúng dấu hiệu "hết lượt 200" (site trả error_code 504 / câu "200 thông tin")
-const hetLuot = t => /200 th[ôo]ng tin|error_code"?\s*:?\s*504|xem 200|gi[ớo]i h[ạa]n.*200/i.test(t || '');
+// 🔴 (8/8) BẮT HẾT LƯỢT — KHÔNG ĐƯỢC gắn cứng con số.
+// Bản cũ tìm chữ "200 thông tin", nhưng 2/8 CĐMG hạ cap còn 100 -> site trả "chỉ được xem 100 thông tin
+// mỗi ngày" mà tool KHÔNG nhận ra -> tưởng căn ẩn số và ĐÁNH DẤU 'ẨN SỐ' VĨNH VIỄN, loại oan khỏi hàng đợi.
+// Hàng đợi tụt 1.072 -> 598 trong 5 ngày vì lỗi này. Nay bắt theo MẪU CÂU + mã lỗi, số nào cũng dính.
+const hetLuot = t => /ch[ỉi] đư[ợo]c xem\s*\d+\s*th[ôo]ng tin|\d+\s*th[ôo]ng tin m[ỗo]i ng[àa]y|error_code"?\s*:?\s*504|h[ếe]t l[ưu][ợo]t|gi[ớo]i h[ạa]n.*\d+\s*th[ôo]ng tin/i.test(t || '');
 
 // Bóc đường dẫn ẢNH SỔ từ quickview HTML (CĐMG chia sẵn data-fancybox="hinh_so...") — khớp classifyImages_ bên GAS
 function soPaths(qv) {
@@ -112,27 +115,39 @@ function soPaths(qv) {
 }
 async function reveal(can) {
   // 1) quickview -> lấy contact-uuid (data-mode="Phone")
-  const qv = jsonMsg(await (await rfetch(`${BASE}/NhaPho/quickview/${can.uuid}`, { method: 'POST', headers: H, body: 'token=' + cfg.jwt })).text());
+  // ⚠️ kiểm hết-lượt trên PHẢN HỒI GỐC trước khi bóc message — bóc rồi là mất error_code, khó bắt hơn
+  const qvRaw = await (await rfetch(`${BASE}/NhaPho/quickview/${can.uuid}`, { method: 'POST', headers: H, body: 'token=' + cfg.jwt })).text();
+  if (hetLuot(qvRaw)) return { limit: true };
+  const qv = jsonMsg(qvRaw);
   if (hetLuot(qv)) return { limit: true };
+  // quickview quá ngắn = không phải HTML căn (site trả lỗi lạ) -> DỪNG, đừng coi là "ẩn số"
+  if (qv.length < 200) { log(`⚠️ quickview lạ (${qv.length} ký tự): ${qv.slice(0, 120)} — DỪNG cho an toàn`); return { limit: true }; }
   // TIỆN LƯỢT QUICKVIEW (25/07): bóc luôn ảnh SỔ (0 lượt thêm) — cả căn ẩn số cũng lấy
   const so = can.co_so ? [] : soPaths(qv);
   const cuuids = [...qv.matchAll(/data-uuid="([0-9a-f-]{36})"\s+data-mode="Phone"/g)].map(m => m[1]);
   if (!cuuids.length) return { none: true, so };
-  // 2) phone(cuuid) -> nếu bị khoá "xác minh" thì report rồi xem lại
-  const cu = cuuids[0];
-  let ph = jsonMsg(await (await rfetch(`${BASE}/NhaPho/phone/${cu}`, { method: 'POST', headers: H, body: 'token=' + cfg.jwt })).text());
-  if (hetLuot(ph)) return { limit: true };
-  if (/x[aá]c\s*minh/i.test(ph)) {
-    await report(cu);
-    ph = jsonMsg(await (await rfetch(`${BASE}/NhaPho/phone/${cu}`, { method: 'POST', headers: H, body: 'token=' + cfg.jwt })).text());
-    if (hetLuot(ph)) return { limit: true };
+  // 2) VÉT HẾT SỐ TRONG CÙNG LƯỢT QUICKVIEW (Tuấn chốt 8/8): site tính quota theo LƯỢT XEM QUICKVIEW,
+  //    căn có mấy liên hệ thì xem được hết bấy nhiêu — KHÔNG phải 1 lượt = 1 số.
+  //    Bản cũ chỉ lấy cuuids[0] rồi bỏ phần còn lại -> mất trắng số của các liên hệ khác dù đã trả quota.
+  const tels = [], names = [];
+  for (const cu of cuuids) {
+    let ph = jsonMsg(await (await rfetch(`${BASE}/NhaPho/phone/${cu}`, { method: 'POST', headers: H, body: 'token=' + cfg.jwt })).text());
+    if (hetLuot(ph)) { if (tels.length) break; return { limit: true }; }   // đã lấy được số nào thì giữ số đó
+    if (/x[aá]c\s*minh/i.test(ph)) {          // site ép xác minh mới cho xem -> report rồi xem lại
+      await report(cu);
+      ph = jsonMsg(await (await rfetch(`${BASE}/NhaPho/phone/${cu}`, { method: 'POST', headers: H, body: 'token=' + cfg.jwt })).text());
+      if (hetLuot(ph)) { if (tels.length) break; return { limit: true }; }
+    }
+    const t = (ph.match(/tel:(\d{9,11})/) || [])[1] || '';
+    const n = clean((ph.match(/fw-bold fs-5 text-gray-700[^>]*>\s*([^<]+)/) || [])[1]);
+    await report(cu);                          // xác minh số vừa xem (site ép, khớp reportFull_ bên GAS)
+    if (!t) continue;
+    const chuan = t.length === 9 ? '0' + t : t;                       // Sheet hay nuốt số 0 -> chuẩn ngay từ đây
+    if (!tels.includes(chuan)) { tels.push(chuan); names.push(n || ''); }
+    await sleep(700);                          // rải nhẹ giữa các số cùng 1 căn
   }
-  const tel = (ph.match(/tel:(\d{9,11})/) || [])[1] || '';
-  const nm = clean((ph.match(/fw-bold fs-5 text-gray-700[^>]*>\s*([^<]+)/) || [])[1]);
-  if (!tel) return { none: true, so };
-  // 3) XÁC MINH số vừa xem (site ép — khớp reportFull_ trong GAS)
-  await report(cu);
-  return { phone: tel, owner: nm, so };
+  if (!tels.length) return { none: true, so };
+  return { phone: tels.join(' / '), owner: names.filter(Boolean).join(' / '), so, so_luong_sdt: tels.length };
 }
 async function report(cu) {
   try { await rfetch(`${BASE}/NhaPho/process_report/${cu}`, { method: 'POST', headers: H, body: `token=${cfg.jwt}&uuid=${cu}&status=${STATUS}&note=` }); }
