@@ -125,7 +125,7 @@ async function reveal(can) {
   // TIỆN LƯỢT QUICKVIEW (25/07): bóc luôn ảnh SỔ (0 lượt thêm) — cả căn ẩn số cũng lấy
   const so = can.co_so ? [] : soPaths(qv);
   const cuuids = [...qv.matchAll(/data-uuid="([0-9a-f-]{36})"\s+data-mode="Phone"/g)].map(m => m[1]);
-  if (!cuuids.length) return { none: true, so };
+  if (!cuuids.length) return { none: true, so, vi: 'căn KHÔNG có liên hệ nào (ẩn số thật)' };
   // 2) VÉT HẾT SỐ TRONG CÙNG LƯỢT QUICKVIEW (Tuấn chốt 8/8): site tính quota theo LƯỢT XEM QUICKVIEW,
   //    căn có mấy liên hệ thì xem được hết bấy nhiêu — KHÔNG phải 1 lượt = 1 số.
   //    Bản cũ chỉ lấy cuuids[0] rồi bỏ phần còn lại -> mất trắng số của các liên hệ khác dù đã trả quota.
@@ -146,7 +146,9 @@ async function reveal(can) {
     if (!tels.includes(chuan)) { tels.push(chuan); names.push(n || ''); }
     await sleep(700);                          // rải nhẹ giữa các số cùng 1 căn
   }
-  if (!tels.length) return { none: true, so };
+  // CÓ liên hệ mà không moi ra số nào -> KHÔNG phải ẩn số, có thể site đổi giao diện/chặn.
+  // Đánh dấu 'ẨN SỐ' lúc này là loại oan căn khỏi hàng đợi (bài học 8/8) -> báo lạ để người soi.
+  if (!tels.length) return { la: true, so, vi: `có ${cuuids.length} liên hệ nhưng KHÔNG moi được số` };
   return { phone: tels.join(' / '), owner: names.filter(Boolean).join(' / '), so, so_luong_sdt: tels.length };
 }
 async function report(cu) {
@@ -166,7 +168,7 @@ if (TEST) {
 
 // ---- CHẠY THẬT ----
 let ok = 0, none = 0, loi = 0, loiLienTiep = 0, done = 0;
-let pend = [], ansoPend = [];   // ansoPend: căn chủ ẨN SỐ -> báo GAS ghi dấu, mai khỏi thử lại (23/07, đỡ phí ~40 lượt/ngày)
+let pend = [], ansoPend = [], laSo = 0;   // ansoPend: căn chủ ẨN SỐ -> báo GAS ghi dấu, mai khỏi thử lại (23/07, đỡ phí ~40 lượt/ngày)
 // ---- ẢNH SỔ đi kèm (25/07 — cùng lượt quickview, 0 lượt thêm): tải local -> cloudinary -> GAS cdmgputso (có đối chiếu) ----
 let soOk = 0, soFailLT = 0, soTat = false;
 async function luuSo(c, paths) {
@@ -208,12 +210,17 @@ for (const c of cfg.cans) {
   if (done >= CAP) { log(`đã đủ cap ${CAP} — dừng, chừa lượt cho Tuấn xem tay`); break; }
   let r;
   try { r = await reveal(c); } catch (e) { r = { err: true }; }
-  if (r.limit) { log('🛑 SITE BÁO HẾT LƯỢT (200/ngày) — dừng ngay, để mai chạy tiếp'); break; }
+  if (r.limit) { log('🛑 SITE BÁO HẾT LƯỢT — dừng ngay, để mai chạy tiếp'); break; }
   done++;
   if (r.phone) { ok++; loiLienTiep = 0; pend.push({ ma: c.ma, phone: r.phone, owner: r.owner, addr: c.addr });
     if (ok % 20 === 0) log(`✓ ${ok} số (mới nhất ${c.ma}: ${r.phone}${r.owner ? ' — ' + r.owner : ''})`);
     if (pend.length >= BATCH) await flush();
-  } else if (r.none) { none++; loiLienTiep = 0; ansoPend.push({ ma: c.ma, addr: c.addr }); if (pend.length + ansoPend.length >= BATCH) await flush(); }
+  } else if (r.none) {   // CHẮC CHẮN không có liên hệ -> đánh dấu ẩn số cho khỏi thử lại tốn lượt
+    none++; loiLienTiep = 0; log(`   ${c.ma}: ${r.vi || 'ẩn số'}`);
+    ansoPend.push({ ma: c.ma, addr: c.addr }); if (pend.length + ansoPend.length >= BATCH) await flush();
+  } else if (r.la) {   // (8/8) CÓ liên hệ mà không moi được số -> KHÔNG đánh dấu, để lần sau thử lại
+    laSo++; loiLienTiep = 0; log(`   ⚠️ ${c.ma}: ${r.vi} — KHÔNG đánh dấu ẩn số, giữ trong hàng đợi`);
+  }
   else { loi++; loiLienTiep++; if (loiLienTiep >= 8) { log('🛑 8 lỗi liên tiếp (mất phiên?/site chặn) — dừng an toàn'); break; } }
   if (r.so && r.so.length) await luuSo(c, r.so);   // ảnh sổ đi kèm — sau khi xử lý số, không ảnh hưởng đếm lượt
   await sleep(2200 + Math.floor((c.ma.charCodeAt(0) % 12) * 130));   // rải 2.2-3.7s/căn, đỡ lộ pattern máy
