@@ -1,0 +1,27 @@
+# TẠM NGƯNG WEB (08/10/2026 — Tuấn chốt dừng web).
+# Thay toàn bộ tuansaigon.com bằng 1 trang "tạm ngưng" (thư mục tam-ngung/).
+# Vì sao KHÔNG gỡ GitHub Pages: DNS tuansaigon.com vẫn trỏ về GitHub — gỡ Pages là người khác
+# có thể nhận vơ tên miền (domain takeover). Giữ Pages + đổi nội dung thì tên miền vẫn của mình.
+# BẬT LẠI WEB: enable workflow "Cập nhật web hằng ngày" rồi bấm chạy nó — bản build thật đè lên trang này.
+name: Tạm ngưng web
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency: capnhat-web
+jobs:
+  tam-ngung:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: tam-ngung
+      - id: deployment
+        uses: actions/deploy-pages@v4
